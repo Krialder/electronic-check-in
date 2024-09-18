@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Settings</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="navbar">
+        <a href="file:///C:/RKI_IT_AE/Anwesenheitsliste/Code2/dashboard.html">📊 Dashboard</a>
+        <a href="#my-checkins">🕒 My Check-ins</a>
+        <a href="#my-analytics">📈 My Analytics</a>
+        <a href="#events-attended">📅 Events Attended</a>
+        <a href="#rfid-devices">📟 RFID Devices</a>
+        <a href="file:///C:/RKI_IT_AE/Anwesenheitsliste/Code2/account-settings.html">⚙️ Account Settings</a>
+        <a href="#notifications">🔔 Notifications</a>
+        <a href="#download-data">💾 Download Data</a>
+        <a href="#help-support">❓ Help & Support</a>
+        <a href="logout.php">🔓 Log Out</a>
+    </div>
+
+    <div class="content">
+        <h2>Account Settings</h2>
+        <form id="settings-form">
+            <fieldset>
+                <legend>Notification Preferences</legend>
+                <label>
+                    <input type="checkbox" name="email_notifications" checked>
+                    Email Notifications
+                </label>
+                <br>
+                <label>
+                    <input type="checkbox" name="sms_notifications">
+                    SMS Notifications
+                </label>
+            </fieldset>
+            <fieldset>
+                <legend>Theme Preferences</legend>
+                <label for="theme-toggle">Dark Mode</label>
+                <input type="checkbox" id="theme-toggle" name="theme_toggle">
+            </fieldset>
+            <button type="submit">Save Settings</button>
+        </form>
+    </div>
+
+    <script>
+        // Load dark mode setting from localStorage
+        const themeToggle = document.getElementById('theme-toggle');
+        if (localStorage.getItem('darkMode') === 'enabled') {
+            document.body.classList.add('dark-mode');
+            themeToggle.checked = true;
+        }
+
+        // Apply dark mode without saving it
+        themeToggle.addEventListener('change', () => {
+            if (themeToggle.checked) {
+                document.body.classList.add('dark-mode');
+            } else {
+                document.body.classList.remove('dark-mode');
+            }
+        });
+
+        // Save dark mode setting to localStorage on form submission
+        document.getElementById('settings-form').addEventListener('submit', (event) => {
+            event.preventDefault();
+            if (themeToggle.checked) {
+                localStorage.setItem('darkMode', 'enabled');
+            } else {
+                localStorage.setItem('darkMode', 'disabled');
+            }
+            alert('Settings saved!');
+        });
+    </script>
+</body>
+</html>

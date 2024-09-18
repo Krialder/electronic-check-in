@@ -8,12 +8,12 @@
 </head>
 <body>
     <div class="navbar">
-        <a href="#dashboard">📊 Dashboard</a>
+        <a href="file:///C:/RKI_IT_AE/Anwesenheitsliste/Code2/dashboard.html">📊 Dashboard</a>
         <a href="#my-checkins">🕒 My Check-ins</a>
         <a href="#my-analytics">📈 My Analytics</a>
         <a href="#events-attended">📅 Events Attended</a>
         <a href="#rfid-devices">📟 RFID Devices</a>
-        <a href="#account-settings">⚙️ Account Settings</a>
+        <a href="file:///C:/RKI_IT_AE/Anwesenheitsliste/Code2/account-settings.html">⚙️ Account Settings</a>
         <a href="#notifications">🔔 Notifications</a>
         <a href="#download-data">💾 Download Data</a>
         <a href="#help-support">❓ Help & Support</a>
@@ -35,5 +35,12 @@
         <p>Total Check-ins: <?php echo $data['analytics']['total_checkins']; ?></p>
         <p>Average Check-in Time: <?php echo $data['analytics']['avg_checkin_time']; ?></p>
     </div>
+
+    <script>
+        // Load dark mode setting from localStorage
+        if (localStorage.getItem('darkMode') === 'enabled') {
+            document.body.classList.add('dark-mode');
+        }
+    </script>
 </body>
 </html>
