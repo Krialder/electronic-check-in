@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="navbar">
+        <a href="#dashboard">📊 Dashboard</a>
+        <a href="#my-checkins">🕒 My Check-ins</a>
+        <a href="#my-analytics">📈 My Analytics</a>
+        <a href="#events-attended">📅 Events Attended</a>
+        <a href="#rfid-devices">📟 RFID Devices</a>
+        <a href="#account-settings">⚙️ Account Settings</a>
+        <a href="#notifications">🔔 Notifications</a>
+        <a href="#download-data">💾 Download Data</a>
+        <a href="#help-support">❓ Help & Support</a>
+        <a href="logout.php">🔓 Log Out</a>
+    </div>
+
+    <div class="content">
+        <h2>Recent Check-ins</h2>
+        <ul>
+            <?php
+            $data = json_decode(file_get_contents('dashboard_fetch_data.php'), true);
+            foreach ($data['recent_checkins'] as $checkin) {
+                echo "<li>{$checkin['name']} checked in to {$checkin['event_name']} at {$checkin['checkin_time']}</li>";
+            }
+            ?>
+        </ul>
+
+        <h2>Key Analytics</h2>
+        <p>Total Check-ins: <?php echo $data['analytics']['total_checkins']; ?></p>
+        <p>Average Check-in Time: <?php echo $data['analytics']['avg_checkin_time']; ?></p>
+    </div>
+</body>
+</html>
