@@ -10,7 +10,8 @@ $stmt->bind_param("s", $rfid);
 $stmt->execute();
 $stmt->store_result();
 
-if ($stmt->num_rows > 0) {
+if ($stmt->num_rows > 0) 
+{
     // RFID exists, log the user
     $stmt->bind_result($user_id);
     $stmt->fetch();
@@ -23,7 +24,9 @@ if ($stmt->num_rows > 0) {
     $stmt_insert->execute();
 
     echo "User logged in successfully";
-} else {
+} 
+else 
+{
     echo "RFID not recognized";
 }
 
