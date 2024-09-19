@@ -1,7 +1,8 @@
 <?php
 include 'DBConnection.php';
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if ($_SERVER["REQUEST_METHOD"] == "POST") 
+{
     $email = $_POST['email'];
     $password = $_POST['password'];
 
@@ -11,7 +12,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->execute();
     $result = $stmt->get_result();
 
-    if ($result->num_rows > 0) {
+    if ($result->num_rows > 0) 
+    {
         $row = $result->fetch_assoc();
         echo "Welcome, " . $row['name'] . "!<br>";
         echo "Email: " . $row['email'] . "<br>";
@@ -20,7 +22,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo "Role: " . $row['role'] . "<br>";
         echo "Created At: " . $row['created_at'] . "<br>";
         echo "Updated At: " . $row['updated_at'] . "<br>";
-    } else {
+    }
+    else 
+    {
         echo "Invalid email or password.";
     }
 
