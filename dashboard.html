@@ -25,7 +25,8 @@
         <ul>
             <?php
             $data = json_decode(file_get_contents('dashboard_fetch_data.php'), true);
-            foreach ($data['recent_checkins'] as $checkin) {
+            foreach ($data['recent_checkins'] as $checkin) 
+            {
                 echo "<li>{$checkin['name']} checked in to {$checkin['event_name']} at {$checkin['checkin_time']}</li>";
             }
             ?>
@@ -38,7 +39,8 @@
 
     <script>
         // Load dark mode setting from localStorage
-        if (localStorage.getItem('darkMode') === 'enabled') {
+        if (localStorage.getItem('darkMode') === 'enabled') 
+        {
             document.body.classList.add('dark-mode');
         }
     </script>
