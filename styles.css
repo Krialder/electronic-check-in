@@ -1,12 +1,14 @@
 /* Default Light Mode Styles */
-body {
+body 
+{
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
     margin: 0;
     padding: 0;
 }
 
-.navbar {
+.navbar 
+{
     position: fixed;
     top: 0;
     width: 100%;
@@ -17,34 +19,40 @@ body {
     z-index: 1000;
 }
 
-.navbar a {
+.navbar a 
+{
     color: white;
     text-decoration: none;
     padding: 14px 20px;
     display: inline-block;
 }
 
-.navbar a:hover {
+.navbar a:hover 
+{
     background-color: #575757;
 }
 
-.content {
+.content 
+{
     margin-top: 60px; /* To avoid overlap with the fixed navbar */
     padding: 20px;
 }
 
-h2 {
+h2 
+{
     color: #333;
     font-size: 24px;
     margin-bottom: 10px;
 }
 
-ul {
+ul 
+{
     list-style-type: none;
     padding: 0;
 }
 
-li {
+li 
+{
     background-color: white;
     margin: 5px 0;
     padding: 10px;
@@ -53,32 +61,39 @@ li {
 }
 
 /* Dark Mode Styles */
-.dark-mode {
+.dark-mode 
+{
     background-color: #121212;
     color: #e0e0e0;
 }
 
-.dark-mode .navbar {
+.dark-mode .navbar 
+{
     background-color: #1f1f1f;
 }
 
-.dark-mode .navbar a {
+.dark-mode .navbar a 
+{
     color: #e0e0e0;
 }
 
-.dark-mode .navbar a:hover {
+.dark-mode .navbar a:hover 
+{
     background-color: #333;
 }
 
-.dark-mode .content {
+.dark-mode .content 
+{
     background-color: #121212;
 }
 
-.dark-mode h2 {
+.dark-mode h2 
+{
     color: #e0e0e0;
 }
 
-.dark-mode li {
+.dark-mode li 
+{
     background-color: #1f1f1f;
     box-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
 }
