@@ -3,7 +3,8 @@ CREATE DATABASE IF NOT EXISTS kde_test2;
 USE kde_test2;
 
 -- Create Users table
-CREATE TABLE IF NOT EXISTS Users (
+CREATE TABLE IF NOT EXISTS Users 
+(
     user_id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
@@ -16,7 +17,8 @@ CREATE TABLE IF NOT EXISTS Users (
 );
 
 -- Create Events table
-CREATE TABLE IF NOT EXISTS Events (
+CREATE TABLE IF NOT EXISTS Events 
+(
     event_id INT AUTO_INCREMENT PRIMARY KEY,
     event_name VARCHAR(255) NOT NULL,
     location VARCHAR(255),
@@ -27,7 +29,8 @@ CREATE TABLE IF NOT EXISTS Events (
 );
 
 -- Create Check-In table
-CREATE TABLE IF NOT EXISTS CheckIn (
+CREATE TABLE IF NOT EXISTS CheckIn 
+(
     checkin_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
     event_id INT,
@@ -40,7 +43,8 @@ CREATE TABLE IF NOT EXISTS CheckIn (
 );
 
 -- Create RFID Devices table
-CREATE TABLE IF NOT EXISTS RFIDDevices (
+CREATE TABLE IF NOT EXISTS RFIDDevices 
+(
     device_id INT AUTO_INCREMENT PRIMARY KEY,
     device_name VARCHAR(255),
     location VARCHAR(255),
@@ -50,7 +54,8 @@ CREATE TABLE IF NOT EXISTS RFIDDevices (
 );
 
 -- Create Access Logs table
-CREATE TABLE IF NOT EXISTS AccessLogs (
+CREATE TABLE IF NOT EXISTS AccessLogs 
+(
     log_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
     rfid_tag VARCHAR(255),
@@ -64,7 +69,8 @@ CREATE TABLE IF NOT EXISTS AccessLogs (
 );
 
 -- Create Reports table
-CREATE TABLE IF NOT EXISTS Reports (
+CREATE TABLE IF NOT EXISTS Reports 
+(
     report_id INT AUTO_INCREMENT PRIMARY KEY,
     event_id INT,
     total_checkins INT,
