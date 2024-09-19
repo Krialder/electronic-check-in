@@ -16,8 +16,10 @@ $analytics_sql = "SELECT COUNT(*) AS total_checkins, AVG(TIMEDIFF(CheckIn.checki
 $analytics_result = $conn->query($analytics_sql);
 
 $recent_checkins = [];
-if ($recent_checkins_result->num_rows > 0) {
-    while($row = $recent_checkins_result->fetch_assoc()) {
+if ($recent_checkins_result->num_rows > 0) 
+{
+    while($row = $recent_checkins_result->fetch_assoc()) 
+    {
         $recent_checkins[] = $row;
     }
 }
