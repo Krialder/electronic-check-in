@@ -79,3 +79,4 @@ CREATE TABLE IF NOT EXISTS Reports
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (event_id) REFERENCES Events(event_id)
 );
+

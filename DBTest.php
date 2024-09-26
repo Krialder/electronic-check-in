@@ -48,7 +48,7 @@
 
     try 
     {
-        $tables = ['Users', 'Events', 'CheckIn', 'RFIDDevices', 'AccessLogs', 'Reports'];
+        $tables = ['accesslogs', 'checkin', 'events', 'reports', 'rfiddevices', 'users'];
         foreach ($tables as $table) 
         {
             $data = fetchTableData($conn, $table);

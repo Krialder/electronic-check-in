@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,36 +9,52 @@
 </head>
 <body>
     <div class="navbar">
-        <a href="file:///C:/RKI_IT_AE/Anwesenheitsliste/Code2/dashboard.html">📊 Dashboard</a>
+        <a href="file:///C:/xampp/htdocs/dashboard.html">📊 Dashboard</a>
         <a href="#my-checkins">🕒 My Check-ins</a>
         <a href="#my-analytics">📈 My Analytics</a>
         <a href="#events-attended">📅 Events Attended</a>
         <a href="#rfid-devices">📟 RFID Devices</a>
-        <a href="file:///C:/RKI_IT_AE/Anwesenheitsliste/Code2/account-settings.html">⚙️ Account Settings</a>
+        <a href="file:///C:/xampp/htdocs/account-settings.html">⚙️ Account Settings</a>
         <a href="#notifications">🔔 Notifications</a>
         <a href="#download-data">💾 Download Data</a>
         <a href="#help-support">❓ Help & Support</a>
         <a href="logout.php">🔓 Log Out</a>
-    </div>
+   </div>
 
     <div class="content">
         <h2>Recent Check-ins</h2>
-        <ul>
-            <?php
-            $data = json_decode(file_get_contents('dashboard_fetch_data.php'), true);
-            foreach ($data['recent_checkins'] as $checkin) 
-            {
-                echo "<li>{$checkin['name']} checked in to {$checkin['event_name']} at {$checkin['checkin_time']}</li>";
-            }
-            ?>
-        </ul>
+        <ul id="recent-checkins"></ul>
 
         <h2>Key Analytics</h2>
-        <p>Total Check-ins: <?php echo $data['analytics']['total_checkins']; ?></p>
-        <p>Average Check-in Time: <?php echo $data['analytics']['avg_checkin_time']; ?></p>
+        <p id="total-checkins"></p>
+        <p id="avg-checkin-time"></p>
     </div>
 
     <script>
+        // Fetch data and populate the dashboard
+        fetch('http://localhost/dashboard_fetch_data.php')
+            .then(response => response.json())
+            .then(data => 
+            {
+                if (data.error) 
+                {
+                    console.error('Error:', data.error);
+                    return;
+                }
+
+                const recentCheckinsList = document.getElementById('recent-checkins');
+                data.recent_checkins.forEach(checkin => 
+                {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = `${checkin.name} checked in to ${checkin.event_name} at ${checkin.checkin_time}`;
+                    recentCheckinsList.appendChild(listItem);
+                });
+
+                document.getElementById('total-checkins').textContent = `Total Check-ins: ${data.analytics.total_checkins}`;
+                document.getElementById('avg-checkin-time').textContent = `Average Check-in Time: ${data.analytics.avg_checkin_time}`;
+            })
+            .catch(error => console.error('Error:', error));
+
         // Load dark mode setting from localStorage
         if (localStorage.getItem('darkMode') === 'enabled') 
         {
