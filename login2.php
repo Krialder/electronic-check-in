@@ -1,67 +1,76 @@
 <?php
+// Include the database connection
 include 'DB_Connection.php';
 
-// Initialize email and password variables
-$email = isset($_POST['email']) ? $_POST['email'] : '';
-$password = isset($_POST['password']) ? $_POST['password'] : '';
+// Start the session
+session_start();
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Create SQL query to check email and password
-    $sql = "SELECT * FROM Users WHERE email = :email AND password = :password";
+// Check if the form is submitted
+if ($_SERVER["REQUEST_METHOD"] == "POST") 
+{
+    // Get the email and password from the form
+    $email = $_POST['email'];
+    $password = $_POST['password'];
 
-    try {
+    // SQL query to select the user by email
+    $sql = "SELECT * FROM Users WHERE email = :email";
+
+    try 
+    {
         // Prepare the SQL statement
         $stmt = $conn->prepare($sql);
         
         // Bind parameters
         $stmt->bindParam(':email', $email);
-        $stmt->bindParam(':password', $password);
         
         // Execute the statement
         $stmt->execute();
         
-        // Check if any rows are returned
+        // Check if the email exists
         if ($stmt->rowCount() > 0) 
         {
-            // Redirect to dashboard.html
-            echo '<a href="file:///C:/xampp/htdocs/dashboard.html">Go to Dashboard</a>';
+            // Fetch the user data
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+            // Verify the password
+            if (password_verify($password, $user['password'])) 
+            {
+                // Store user information in session variables
+                $_SESSION['user_id'] = $user['user_id'];
+                $_SESSION['name'] = $user['name'];
+                $_SESSION['email'] = $user['email'];
+                $_SESSION['role'] = $user['role'];
+        
+                // Redirect to dashboard.php
+                header("Location: /dashboard.php");
+                exit();
+            } 
+            else 
+            {
+            // Redirect to login22.php with password error message
+            header("Location: /login22.php?error=Invalid password");
             exit();
+            }
         } 
         else 
         {
-            // Redirect to login2.html with error message
-            header("Location: /login2.html");
+            // Redirect to login22.php with email error message
+            header("Location: /login22.php?error=Invalid email");
             exit();
         }
-    } catch (PDOException $e) 
+    } 
+    catch (PDOException $e) 
     {
-        // Redirect to login2.html with error message
-        header("Location: /login2.html");
-        exit();
+        echo "Error: " . $e->getMessage();
     }
+} 
+else 
+{
+    // Redirect to login22.php if the form is not submitted
+    header("Location: /login22.php");
+    exit();
 }
-?>
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Login</title>
-</head>
-<body>
-    <form method="post" action="login2.php">
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required>
-        <br>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
-        <br>
-        <button type="submit">Login</button>
-    </form>
-    <?php
-    if (isset($_GET['error'])) 
-    {
-        echo '<p style="color:red;">' . htmlspecialchars($_GET['error']) . '</p>';
-    }
-    ?>
-</body>
-</html>
+// Close the connection
+$conn = null;
+?>
