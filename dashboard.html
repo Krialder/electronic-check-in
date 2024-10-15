@@ -1,4 +1,3 @@
-<?php include 'session_check.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -54,6 +53,10 @@
 
             document.getElementById('total-checkins').textContent = `Total Check-ins: ${data.analytics.total_checkins}`;
             document.getElementById('avg-checkin-time').textContent = `Average Check-in Time: ${data.analytics.avg_checkin_time}`;
+        })
+        .catch(error => 
+        {
+            Console.error('Fetch Error:', error);
         });
 // Load dark mode setting from localStorage
     if (localStorage.getItem('darkMode') === 'enabled') 

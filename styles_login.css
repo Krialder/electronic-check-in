@@ -29,7 +29,7 @@ body
             color: #555;
             text-align: left;
 }
-        .login-container input[type="email"],
+        .login-container input[type="text"],
         .login-container input[type="password"] 
 {
             width: 100%;

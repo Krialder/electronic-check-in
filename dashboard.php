@@ -18,7 +18,7 @@
         <a href="#notifications">🔔 Notifications</a>
         <a href="#download-data">💾 Download Data</a>
         <a href="#help-support">❓ Help & Support</a>
-        <a href="logout.php">🔓 Log Out</a>
+        <a href="/logout.php">🔓 Log Out</a>
    </div>
 
    <div class="content">

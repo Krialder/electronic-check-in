@@ -47,6 +47,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
             } 
             else 
             {
+            
             // Redirect to login22.php with password error message
             header("Location: /login22.php?error=Invalid password");
             exit();
