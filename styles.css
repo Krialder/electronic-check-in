@@ -34,7 +34,7 @@ body
 
 .content 
 {
-    margin-top: 60px; /* To avoid overlap with the fixed navbar */
+    margin-top: 60px;
     padding: 20px;
 }
 

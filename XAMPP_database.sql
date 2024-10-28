@@ -15,6 +15,18 @@ CREATE TABLE IF NOT EXISTS Users
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+--Create Guest table
+CREATE TABLE IF NOT EXISTS Guest
+(
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255),
+    phone VARCHAR(20),
+    rfid_tag VARCHAR(255),
+    role VARCHAR(50),
+    password VARCHAR(255) NOT NULL
+);
+
 -- Create Events table
 CREATE TABLE IF NOT EXISTS Events 
 (

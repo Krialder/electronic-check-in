@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang = "en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title> registration</title>
+    </head>
+
+    <script>
+        // function to update the username field based on the forname and surname fields
+        function updateUsername()
+        {
+            const forname = document.getElementById('forname').value.trim();
+            const surname = document.getElementById('surname').value.trim();
+            document.getElementById('name').value = forname + ' ' + surname;
+        }
+
+        // function to validate the password field
+        function validatePassword() 
+        {
+            const password = document.getElementById('password').value;
+            const password2 = document.getElementById('password2').value;
+            const pattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W).{9,}$/;
+
+            // check if the passwords match
+            if (password !== password2)
+            {
+                alert('Passwords do not match');
+                return false;
+            }
+
+            // check if the password meets the requirements
+            else if (!pattern.test(password))
+            {
+                alert('Password must contain at least 9 characters, one lowercase letter, one uppercase letter, one number, and one special character');
+                return false;
+            }
+            return true;
+        }
+    </script>
+    <body>
+        <h1>registration</h1>
+        
+        <!--Registration form with the validation on submitting-->
+        <form action = "register.php" method = "post" onsubmit="return validatePassword()">
+
+        <!-- Label and input for the first name with an event listener to update the username -->
+        <label for = "forname">Vorname: </label>
+        <input type = "text" id="forname" name="forname" required oninput="updateUsername()"><br>
+
+        <!-- Label and input for the last name with an event listener to update the username -->
+        <label for = "surname">Nachname</label>
+        <input type = "text" id="surname" name="surname" required oninput="updateUsername()"><br>
+
+        <!-- Label and read-only input for the username, which is automatically updated -->
+        <label for="name">Benutzername</label>
+        <input type="text" id="name" name="name" readonly><br>
+
+        <!-- Label and input for the email address -->
+        <label for = "email">E-mail</label>
+        <input type = "email" id="email" name="email"><br>
+
+        <!-- Label and input for the password -->
+        <label for = "password">Password</label>
+        <input type = "password" id="password" name="password" required><br>
+
+        <!-- Label and input for the password confirmation -->
+        <label for = "password">Password wiederholen</label>    
+        <input type = "password" id="password2" name="password2" required><br>
+
+        <!-- Password requirements information -->
+        <p>Password must contain at least 9 characters, one lowercase letter, one uppercase letter, one number, and one special character.</p>
+
+        <!-- Submit button for the form -->
+        <input type = "submit" name="register" value = "submit">
+    </body>
+</html>

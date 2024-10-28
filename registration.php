@@ -2,57 +2,75 @@
 
 session_start();
 
-error_reporting(E_ALL);
+error_reporting(E_ALL); 
 
-ini_set('display_errors', 1);
+ini_set('display_errors', 1); 
 
-error_log('registration.php beginning');
+error_log('registration.php beginning'); 
 
-include 'DB_Connection.php';
+include 'DB_Connection.php'; 
+// Check if the user role is admin
+$user_role = $_SESSION['role'] === 'admin'; 
 
-$user_role = $_SESSION['role'] === 'admin';
-
+// Exit if the user is not an admin
 if (!$user_role) 
 {
-    exit();
+    exit(); 
 }
+
 if (isset($_POST['register']))
 {
+    // Retrieve form data
     $forname = $_POST['Vorname'];
-    $lastname = $_POST['Nachname'];
+    $surname = $_POST['Nachname'];
     $email = $_POST['email'];
     $password = $_POST['password'];
     $password2 = $_POST['password2'];
 
+    // Validate passwords||Passwords do not match
     if ($password !== $password2)
-    {
-        $password_err = 'Passwörter stimmen nicht überein';
+    {  
+        $password_err = 'Passwörter stimmen nicht überein'; 
     }
+     // Password is empty
     else if (empty($password))
     {
-        $password_err = 'Bitte geben Sie ein Passwort ein';
+        $password_err = 'Bitte geben Sie ein Passwort ein'; 
     }
+    // Email is empty
     else if (empty($email))
     {
-        $email_err = 'Bitte geben Sie eine E-Mail-Adresse ein';
+        $email_err = 'Bitte geben Sie eine E-Mail-Adresse ein'; 
     }
+    // Forename is empty
     else if (empty($forname))
     {
-        $forname_err = 'Bitte geben Sie einen Vornamen an';
+        $forname_err = 'Bitte geben Sie einen Vornamen an'; 
     }
-    else if (empty($lastname))
+    // Surname is empty
+    else if (empty($surname))
     {
-        $lastname_err = 'Bitte geben Sie einen Nachnamen an';
+        $surname_err = 'Bitte geben Sie einen Nachnamen an'; 
     }
     else
     {
-        $name = $_POST['name'] ($forname . ' ' . $lastname);
+        // Combine forename and surname into a full name
+        $name = $forname . ' ' . $surname;
+        
+        // Hash the password
         $hash = password_hash($password, PASSWORD_DEFAULT);
+        
+        // Prepare SQL statement to insert user data
         $sql = 'INSERT INTO Users (name, email, password) VALUES (:name, :email, :password)';
         $stmt = $conn->prepare($sql);
+        
+        // Bind parameters
         $stmt->bindParam(':name', $name);
         $stmt->bindParam(':email', $email);
-        $stmt->bindParam(':password', $password);
+        // Use hashed password
+        $stmt->bindParam(':password', $hash); 
+        
+        // Execute the statement
         $stmt->execute();       
     }
 }

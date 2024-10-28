@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,8 +7,9 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <!-- Navigation bar with links to different sections of the dashboard -->
     <div class="navbar">
-        <a href="\dashboard.html">📊 Dashboard</a>
+        <a href="/dashboard.html">📊 Dashboard</a>
         <a href="#my-checkins">🕒 My Check-ins</a>
         <a href="#my-analytics">📈 My Analytics</a>
         <a href="#events-attended">📅 Events Attended</a>
@@ -21,31 +21,48 @@
         <a href="/logout.php">🔓 Log Out</a>
     </div>
 
-    <div class="content">
+    <div class="content"></div>
         <h2>Account Settings</h2>
+        
+        <!-- Form for updating account settings -->
         <form id="settings-form">
+            
+            <!-- Fieldset for notification preferences -->
             <fieldset>
                 <legend>Notification Preferences</legend>
+                
+                <!-- Checkbox for email notifications -->
                 <label>
                     <input type="checkbox" name="email_notifications" checked>
                     Email Notifications
                 </label>
                 <br>
+                
+                <!-- Checkbox for SMS notifications -->
                 <label>
                     <input type="checkbox" name="sms_notifications">
                     SMS Notifications
                 </label>
             </fieldset>
+            
+            <!-- Fieldset for theme preferences -->
             <fieldset>
                 <legend>Theme Preferences</legend>
+                
+                <!-- Checkbox for dark mode toggle -->
                 <label for="theme-toggle">Dark Mode</label>
                 <input type="checkbox" id="theme-toggle" name="theme_toggle">
             </fieldset>
+            
+            <!-- Button to save settings -->
             <button type="submit">Save Settings</button>
         </form>
+        
+        <!-- Placeholder for admin_view.php content -->
+        <div id="admin-view-content"></div>
     </div>
-
-    <script>
+        <script>
+            
         // Load dark mode setting from localStorage
         const themeToggle = document.getElementById('theme-toggle');
         if (localStorage.getItem('darkMode') === 'enabled') 
@@ -81,6 +98,15 @@
             }
             alert('Settings saved!');
         });
+        
+        // Fetch admin_view.php content and isnert it into the divv
+        fetch('admin_view.php')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('admin-view-content').innerHTML = data;
+            })
+            .catch(error => console.error('Error fetching admin_view.php:', error));
+        
     </script>
 </body>
 </html>
