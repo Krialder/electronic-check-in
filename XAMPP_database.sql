@@ -8,14 +8,16 @@ CREATE TABLE IF NOT EXISTS Users
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
     phone VARCHAR(20),
-    rfid_tag VARCHAR(255) NOT NULL,
+    rfid_tag VARCHAR(255) NOT NULL UNIQUE, -- Add UNIQUE constraint
     role VARCHAR(50),
     password VARCHAR(255) NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX (email), -- Add index on email
+    INDEX (rfid_tag) -- Add index on rfid_tag
 );
 
---Create Guest table
+-- Create Guest table
 CREATE TABLE IF NOT EXISTS Guest
 (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -24,7 +26,9 @@ CREATE TABLE IF NOT EXISTS Guest
     phone VARCHAR(20),
     rfid_tag VARCHAR(255),
     role VARCHAR(50),
-    password VARCHAR(255) NOT NULL
+    password VARCHAR(255) NOT NULL,
+    INDEX (email), -- Add index on email
+    INDEX (rfid_tag) -- Add index on rfid_tag
 );
 
 -- Create Events table
@@ -36,7 +40,8 @@ CREATE TABLE IF NOT EXISTS Events
     start_time DATETIME,
     end_time DATETIME,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX (event_name) -- Add index on event_name
 );
 
 -- Create Check-In table
@@ -50,7 +55,9 @@ CREATE TABLE IF NOT EXISTS CheckIn
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES Users(user_id),
-    FOREIGN KEY (event_id) REFERENCES Events(event_id)
+    FOREIGN KEY (event_id) REFERENCES Events(event_id),
+    INDEX (user_id), -- Add index on user_id
+    INDEX (event_id) -- Add index on event_id
 );
 
 -- Create RFID Devices table
@@ -59,7 +66,9 @@ CREATE TABLE IF NOT EXISTS RFIDDevices
     device_id INT AUTO_INCREMENT PRIMARY KEY,
     device_name VARCHAR(255),
     location VARCHAR(255),
-    ip_address VARCHAR(255)
+    ip_address VARCHAR(255),
+    INDEX (device_name), -- Add index on device_name
+    INDEX (ip_address) -- Add index on ip_address
 );
 
 -- Create AccessLogs table
@@ -74,7 +83,10 @@ CREATE TABLE IF NOT EXISTS AccessLogs
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES Users(user_id),
-    FOREIGN KEY (device_id) REFERENCES RFIDDevices(device_id)
+    FOREIGN KEY (device_id) REFERENCES RFIDDevices(device_id),
+    INDEX (user_id), -- Add index on user_id
+    INDEX (rfid_tag), -- Add index on rfid_tag
+    INDEX (device_id) -- Add index on device_id
 );
 
 -- Create Reports table
@@ -86,7 +98,8 @@ CREATE TABLE IF NOT EXISTS Reports
     avg_checkin_time TIME,
     generated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (event_id) REFERENCES Events(event_id)
+    FOREIGN KEY (event_id) REFERENCES Events(event_id),
+    INDEX (event_id) -- Add index on event_id
 );
 
 -- Insert example data into Users table

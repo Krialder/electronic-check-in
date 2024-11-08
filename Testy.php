@@ -77,50 +77,31 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
                 error_log('Hashed password from DB: ' . $user['password']);
                 echo 'Hashed password from DB: ' . $user['password'] . '<br/>';
 
-                // Verify password using MySQL PASSWORD() function
-                $sql_verify = 'SELECT user_id FROM Users WHERE name = :name AND password = PASSWORD(:password)';
-                if ($stmt_verify = $conn->prepare($sql_verify)) 
+                // Verify password using password_verify
+                if (password_verify($password, $user['password'])) 
                 {
-                    $stmt_verify->bindValue(':name', $name, PDO::PARAM_STR);
-                    $stmt_verify->bindValue(':password', $password, PDO::PARAM_STR);
+                    // Password is correct, so start a new session
+                    session_start();
+                    
+                    // Store data in session variables
+                    $_SESSION['loggedin'] = true;
+                    $_SESSION['id'] = $user['user_id'];
+                    $_SESSION['email'] = $user['email'];
+                    $_SESSION['name'] = $user['name'];
+                    $_SESSION['role'] = $user['role'];
 
-                    if ($stmt_verify->execute()) 
-                    {
-                        if ($stmt_verify->rowCount() == 1) 
-                        {
-                            // Password is correct, so start a new session
-                            session_start();
-                            
-                            // Store data in session variables
-                            $_SESSION['loggedin'] = true;
-                            $_SESSION['id'] = $user['user_id'];
-                            $_SESSION['email'] = $user['email'];
-                            $_SESSION['name'] = $user['name'];
-                            $_SESSION['role'] = $user['role'];
-
-                            // Debugging statement
-                            error_log('Redirecting to /dashboard.html');
-                            echo('Redirecting to /dashboard.html<br/>');
-                                
-                            // Redirect user to welcome page
-                            header('location: /dashboard.html');
-                            exit();
-                        }
-                        else
-                        {
-                            // Password is not valid, display a generic error message
-                            $password_err = 'The password you entered was not valid.';
-                        }
-                    }
-                    else
-                    {
-                        // name doesn't exist, display a generic error message
-                        $name_err = 'No account found with that name.';
-                    }
+                    // Debugging statement
+                    error_log('Redirecting to /dashboard.html');
+                    echo('Redirecting to /dashboard.html<br/>');
+                        
+                    // Redirect user to welcome page
+                    header('location: /dashboard.html');
+                    exit();
                 }
                 else
                 {
-                echo 'Oops! Something went wrong. Please try again later.';
+                    // Password is not valid, display a generic error message
+                    $password_err = 'The password you entered was not valid.';
                 }
         
                 // Close statement

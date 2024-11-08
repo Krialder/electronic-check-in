@@ -39,7 +39,8 @@
                 // Debugging line to see the fetched data in the console
                 console.log('Fetched Data:', data); 
 
-                if (data.error) {
+                if (data.error) 
+                {
                     console.error('Error:', data.error);
                     return;
                 }
@@ -61,7 +62,8 @@
             });
 
         // Load dark mode setting from localStorage
-        if (localStorage.getItem('darkMode') === 'enabled') {
+        if (localStorage.getItem('darkMode') === 'enabled') 
+        {
             document.body.classList.add('dark-mode');
         }
     </script>

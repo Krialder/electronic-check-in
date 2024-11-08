@@ -60,6 +60,20 @@ li
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
 
+/* Toggle Button Styles */
+.toggle-button 
+{
+    cursor: pointer;
+    color: #007bff;
+    text-decoration: underline;
+    font-weight: bold;
+}
+
+.toggle-button:hover 
+{
+    color: #0056b3;
+}
+
 /* Dark Mode Styles */
 .dark-mode 
 {
@@ -96,4 +110,15 @@ li
 {
     background-color: #1f1f1f;
     box-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
+}
+
+/* Dark Mode Toggle Button Styles */
+.dark-mode .toggle-button 
+{
+    color: #66b2ff;
+}
+
+.dark-mode .toggle-button:hover 
+{
+    color: #3399ff;
 }

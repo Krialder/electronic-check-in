@@ -16,19 +16,15 @@ class RFIDManager
 
     String readRFID() 
     {
-        Serial.println("Checking for new card..."); // Debugging statement
         if (!rfid.PICC_IsNewCardPresent()) 
         {
-            Serial.println("No new card present"); // Debugging statement
             return "";
         }
-        Serial.println("New card detected"); // Debugging statement
         if (!rfid.PICC_ReadCardSerial()) 
         {
             Serial.println("Failed to read card serial"); // Debugging statement
             return "";
         }
-        Serial.println("Card serial read successfully"); // Debugging statement
 
         String rfidTag = "";
         for (byte i = 0; i < rfid.uid.size; i++) 
@@ -54,12 +50,15 @@ void setup()
 
 void loop()
 {
-    Serial.println("Loop running"); // Debugging statement
     String rfidTag = rfidManager.readRFID();
     if (rfidTag != "")
     {
         Serial.println("RFID Tag: " + rfidTag); // Send RFID tag to NodeMCU via Serial
-        delay(2000);
+        delay(5000); // Wait for 5 seconds after a successful scan
+        Serial.println("Ready for next scan"); // Debugging statement
     }
-    delay(15000); // Add a delay to avoid flooding the Serial Monitor
+    else
+    {
+        delay(1000); // Scan every second
+    }
 }

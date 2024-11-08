@@ -21,8 +21,11 @@
         <a href="/logout.php">🔓 Log Out</a>
     </div>
 
-    <div class="content"></div>
+    <div class="content">
         <h2>Account Settings</h2>
+        
+        <!-- Display error message if present -->
+        <div id="error-message" style="color: red;"></div>
         
         <!-- Form for updating account settings -->
         <form id="settings-form">
@@ -59,10 +62,16 @@
         </form>
         
         <!-- Placeholder for admin_view.php content -->
-        <div id="admin-view-content"></div>
+        <div id="admin-view-content">
+            <h2>Admin View</h2> <!-- Add header -->
+        </div>
     </div>
-        <script>
-            
+    <style>
+        button[type="submit"] {
+            font-size: 14px; /* Make smaller */
+        }
+    </style>
+    <script>
         // Load dark mode setting from localStorage
         const themeToggle = document.getElementById('theme-toggle');
         if (localStorage.getItem('darkMode') === 'enabled') 
@@ -99,14 +108,42 @@
             alert('Settings saved!');
         });
         
-        // Fetch admin_view.php content and isnert it into the divv
+        // Fetch admin_view.php content and insert it into the div
         fetch('admin_view.php')
             .then(response => response.text())
             .then(data => {
                 document.getElementById('admin-view-content').innerHTML = data;
+                displayErrorMessage();
             })
             .catch(error => console.error('Error fetching admin_view.php:', error));
-        
+
+        function toggleGuestFields(userId) {
+            var guestFields = document.getElementById('guest-fields-' + userId);
+            if (guestFields.style.display === 'none') {
+                guestFields.style.display = 'block';
+            } else {
+                guestFields.style.display = 'none';
+            }
+        }
+
+        // Display error message if present in query parameters
+        function displayErrorMessage() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const errorMessage = urlParams.get('error');
+            const userId = urlParams.get('user_id');
+            if (errorMessage && userId) {
+                const errorDiv = document.createElement('div');
+                errorDiv.style.color = 'red';
+                errorDiv.textContent = decodeURIComponent(errorMessage);
+                const guestFields = document.getElementById('guest-fields-' + userId);
+                if (guestFields) {
+                    guestFields.insertBefore(errorDiv, guestFields.firstChild);
+                    guestFields.style.display = 'block';
+                }
+                // Clear the query parameters from the URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        }
     </script>
 </body>
 </html>

@@ -1,35 +1,53 @@
 <?php
+// Enable error reporting
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+// Include the database connection
 include 'DB_Connection.php';
 
-// Get RFID code from POST request
-$rfid = $_POST['rfid'];
-
-// Prepare and bind
-$stmt = $conn->prepare("SELECT user_id FROM Users WHERE rfid_tag = ?");
-$stmt->bind_param("s", $rfid);
-$stmt->execute();
-$stmt->store_result();
-
-if ($stmt->num_rows > 0) 
+// Check if RFID data is received
+if (isset($_POST['rfid'])) 
 {
-    // RFID exists, log the user
-    $stmt->bind_result($user_id);
-    $stmt->fetch();
+    $rfid = $_POST['rfid'];
+    echo "Received RFID: $rfid"; // Debugging statement
 
-    // Insert into AccessLogs
-    $stmt_insert = $conn->prepare("INSERT INTO AccessLogs (user_id, rfid_tag, device_id, status) VALUES (?, ?, ?, ?)");
-    $device_id = 1; // Assuming device_id is 1 for this example
-    $status = "Logged In";
-    $stmt_insert->bind_param("isis", $user_id, $rfid, $device_id, $status);
-    $stmt_insert->execute();
+    // Check if the RFID tag exists in the Users table
+    $sql = "SELECT user_id FROM Users WHERE rfid_tag = :rfid_tag";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':rfid_tag', $rfid);
+    $stmt->execute();
 
-    echo "User logged in successfully";
-} 
-else 
-{
-    echo "RFID not recognized";
+    if ($stmt->rowCount() > 0) 
+    {
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        $user_id = $row['user_id'];
+
+        // Log the access in the AccessLogs table
+        $sql = "INSERT INTO AccessLogs (user_id, rfid_tag, device_id, status) VALUES (:user_id, :rfid_tag, :device_id, :status)";
+        $stmt = $conn->prepare($sql);
+        $device_id = 1; // Example device ID
+        $status = 'granted';
+        $stmt->bindParam(':user_id', $user_id);
+        $stmt->bindParam(':rfid_tag', $rfid);
+        $stmt->bindParam(':device_id', $device_id);
+        $stmt->bindParam(':status', $status);
+        $stmt->execute();
+
+        echo "Access granted";
+    } 
+    else 
+    {
+        echo "Access denied";
+    }
 }
 
-$stmt->close();
-$conn->close();
+// Handle auto-logout
+if (isset($_POST['auto_logout'])) 
+{
+    // Implement auto-logout logic here
+    echo "Auto-logout successful";
+}
+
+$conn = null;
 ?>

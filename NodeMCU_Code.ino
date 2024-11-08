@@ -2,13 +2,14 @@
 #include <ESP8266HTTPClient.h>
 #include <NTPClient.h>
 #include <WiFiUdp.h>
+#include <ESP8266WebServer.h>
 
 // Wi-Fi credentials
 const char* ssid = "Luftuberwachungssystem";
 const char* password = "Ux957Zi%xqbY6vPHCm#4X";
 
 // Server URL
-const char* serverName = "http://192.168.2.150"; 
+const char* serverName = "http://192.168.2.150/kde_test2_endpoint"; // Update to match the specific database endpoint
 
 // Baud rate for serial communication with Mega 2560
 #define BAUD_RATE 9600
@@ -18,6 +19,7 @@ WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "pool.ntp.org", 3600 * 1); // CET is UTC+1
 
 WiFiClient wifiClient;
+ESP8266WebServer server(80);
 
 void setup() 
 {
@@ -50,10 +52,11 @@ void setup()
     {
         Serial.println("Failed to connect to Wi-Fi");
     }
-    
 
     // Initialize NTP Client
     timeClient.begin();
+    server.on("/start_scan", HTTP_GET, handleStartScan);
+    server.begin();
 }
 
 void loop() 
@@ -81,9 +84,9 @@ void loop()
             if (WiFi.status() == WL_CONNECTED) 
             {
                 HTTPClient http;
-                http.begin(wifiClient, serverName);
+                http.begin(wifiClient, serverName); // Use the specific database endpoint
                 http.addHeader("Content-Type", "application/x-www-form-urlencoded");
-              //Nicht gesperrt!!! Fatal
+
                 String httpRequestData = "rfid=" + rfidTag;
                 int httpResponseCode = http.POST(httpRequestData);
 
@@ -94,7 +97,7 @@ void loop()
                 } 
                 else 
                 {
-                  Serial.println("Error sending POST request");
+                    Serial.println("Error sending POST request");
                 }
                 // Close the connection
                 http.end(); 
@@ -105,6 +108,7 @@ void loop()
             }
         }
     }
+    server.handleClient();
 }
 
 void autoLogout() 
@@ -112,7 +116,7 @@ void autoLogout()
     if (WiFi.status() == WL_CONNECTED) 
     {
         HTTPClient http;
-        http.begin(wifiClient, serverName);
+        http.begin(wifiClient, serverName); // Use the specific database endpoint
         http.addHeader("Content-Type", "application/x-www-form-urlencoded");
 
         String httpRequestData = "auto_logout=true";
@@ -125,7 +129,7 @@ void autoLogout()
         } 
         else 
         {
-          Serial.println("Error sending auto-logout POST request");
+            Serial.println("Error sending auto-logout POST request");
         }
 
         http.end(); // Close the connection
@@ -156,5 +160,30 @@ String getWiFiStatusMeaning(int status)
             return "Disconnected";
         default:
             return "Unknown Status";
+    }
+}
+
+void handleStartScan() 
+{
+    Serial.println("Received /start_scan request"); // Debugging statement
+    String rfidTag = "";
+    unsigned long startTime = millis();
+    while (rfidTag == "" && millis() - startTime < 10000) // Wait for up to 10 seconds
+    {
+        if (Serial.available()) 
+        {
+            rfidTag = Serial.readStringUntil('\n');
+            rfidTag.trim();
+            Serial.println("RFID Tag: " + rfidTag); // Debugging statement
+        }
+    }
+    if (rfidTag != "") 
+    {
+        server.send(200, "text/plain", rfidTag);
+    } 
+    else 
+    {
+        Serial.println("No RFID tag found"); // Debugging statement
+        server.send(200, "text/plain", "No RFID tag found");
     }
 }
