@@ -6,7 +6,32 @@ include 'DB_Connection.php';
 // If no Admin is logged in, exit
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') 
 {
-    exit();
+    exit('Unauthorized access');
+}
+
+// Generate CSRF token
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+$csrf_token = $_SESSION['csrf_token'];
+
+// Verify CSRF token
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        echo 'Invalid CSRF token';
+        exit();
+    }
+    // Sanitize form data
+    $user_id = filter_var($_POST['user_id'], FILTER_SANITIZE_NUMBER_INT);
+    $name = filter_var($_POST['name'], FILTER_SANITIZE_STRING);
+    $email = filter_var($_POST['email'], FILTER_VALIDATE_EMAIL);
+    $phone = filter_var($_POST['phone'], FILTER_SANITIZE_STRING);
+    $rfid_tag = filter_var($_POST['rfid_tag'], FILTER_SANITIZE_STRING);
+    $password = filter_var($_POST['password'], FILTER_SANITIZE_STRING);
+    $role = filter_var($_POST['role'], FILTER_SANITIZE_STRING);
+
+    // Regenerate CSRF token after successful form submission
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
 // Prepare and execute the query
@@ -25,20 +50,23 @@ if ($stmt->rowCount() > 0)
         echo '<div class="guest-container">';
         echo '<h2><span class="toggle-button" onclick="toggleGuestFields(\'' . $userId . '\')">Guest ID: ' . $userId . '</span></h2>';
         echo '<div id="guest-fields-' . $userId . '" style="display: none;">';
-        echo '<form action="process_guest.php" method="post">';
-        echo '<input type="hidden" name="user_id" value="' . $userId . '">';
+        echo '<form action="admin_view.php" method="post">';
+        echo '<input type="hidden" name="user_id" value="' . htmlspecialchars($userId) . '">';
+        echo '<input type="hidden" name="csrf_token" value="' . $csrf_token . '">';
         
         // Display and input for name
         echo '<label>*Name:</label>';
         echo '<input type="text" name="name" value="' . htmlspecialchars($row['name']) . '"><br>';
         
         // Display and input for email
+        $email = filter_var($row['email'], FILTER_VALIDATE_EMAIL);
         echo '<label>Email:</label>';
-        echo '<input type="email" name="email" value="' . htmlspecialchars($row['email']) . '"><br>';
+        echo '<input type="email" name="email" value="' . htmlspecialchars($email) . '"><br>';
         
         // Display and input for phone
+        $phone = filter_var($row['phone'], FILTER_SANITIZE_STRING);
         echo '<label>Phone:</label>';
-        echo '<input type="text" name="phone" value="' . htmlspecialchars($row['phone']) . '"><br>';
+        echo '<input type="text" name="phone" value="' . htmlspecialchars($phone) . '"><br>';
         
         // RFID input and button to assign RFID
         echo '<label>*RFID Tag:</label>';
@@ -78,61 +106,8 @@ $conn = null;
 
 <!-- Link to the external JavaScript file -->
 <script src="rfid_scan.js"></script>
-<script>
-function toggleGuestFields(userId) 
-{
-    var guestFields = document.getElementById('guest-fields-' + userId);
-    if (guestFields.style.display === 'none') 
-    {
-        guestFields.style.display = 'block';
-    } 
-    else 
-    {
-        guestFields.style.display = 'none';
-    }
-}
-
-function startRFIDScan(userId) 
-{
-    var timer = document.getElementById('timer_' + userId);
-    timer.style.display = 'block';
-    timer.value = 'Scanning...';
-
-    console.log('Sending request to NodeMCU to start scanning'); // Debugging statement
-
-    // Send a request to the NodeMCU to start scanning
-    fetch('http://localhost/start_scan')
-        .then(response => response.text())
-        .then(data => {
-            console.log('Received RFID tag from NodeMCU:', data); // Debugging statement
-
-            // Update the RFID input field with the scanned RFID tag
-            document.getElementById('rfid_' + userId).value = data;
-            timer.style.display = 'none';
-
-            // Send the scanned RFID tag to the RFID_Database.php endpoint
-            fetch('RFID_Database.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: 'rfid=' + encodeURIComponent(data)
-            })
-            .then(response => response.text())
-            .then(result => {
-                console.log('Server Response:', result); // Debugging statement
-            })
-            .catch(error => {
-                console.error('Error sending RFID to database:', error); // Debugging statement
-                timer.value = 'Scan failed';
-            });
-        })
-        .catch(error => {
-            console.error('Error sending request to NodeMCU:', error); // Debugging statement
-            timer.value = 'Scan failed';
-        });
-}
-</script>
+<script src="admin_view.js"></script>
+<link rel="stylesheet" href="admin_view.css">
 <style>
 .toggle-button 
 {
@@ -156,5 +131,13 @@ function startRFIDScan(userId)
 
 button[type="submit"] {
     font-size: 14px; 
+}
+
+.guest-container {
+    margin-bottom: 20px;
+}
+
+#timer {
+    display: none;
 }
 </style>

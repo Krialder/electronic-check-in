@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS Users
 (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE, -- Add UNIQUE constraint
     phone VARCHAR(20),
     rfid_tag VARCHAR(255) NOT NULL UNIQUE, -- Add UNIQUE constraint
     role VARCHAR(50),
@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS CheckIn
     user_id INT,
     event_id INT,
     checkin_time DATETIME DEFAULT CURRENT_TIMESTAMP,
-    status VARCHAR(50),
+    status VARCHAR(50) CHECK (status IN ('checked-in', 'checked-out')),
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES Users(user_id),
@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS AccessLogs
     rfid_tag VARCHAR(255),
     device_id INT,
     access_time DATETIME DEFAULT CURRENT_TIMESTAMP,
-    status VARCHAR(50),
+    status VARCHAR(50) CHECK (status IN ('granted', 'denied')),
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES Users(user_id),
@@ -103,10 +103,11 @@ CREATE TABLE IF NOT EXISTS Reports
 );
 
 -- Insert example data into Users table
+-- Use placeholders for password hashing in PHP
 INSERT INTO Users (name, email, phone, rfid_tag, role, password)
 VALUES 
-('John Doe', 'john.doe@example.com', '1234567890', 'RFID123456', 'admin', PASSWORD('password123')),
-('Jane Smith', 'jane.smith@example.com', '0987654321', 'RFID654321', 'user', PASSWORD('password456'));
+('John Doe', 'john.doe@example.com', '1234567890', 'RFID123456', 'admin', :hashed_password1),
+('Jane Smith', 'jane.smith@example.com', '0987654321', 'RFID654321', 'user', :hashed_password2);
 
 -- Insert example data into Events table
 INSERT INTO Events (event_name, location, start_time, end_time)
@@ -136,3 +137,27 @@ VALUES
 INSERT INTO Reports (event_id, total_checkins, avg_checkin_time)
 VALUES 
 (1, 2, '00:05:00');
+
+-- Add indexes on frequently queried columns
+CREATE INDEX idx_users_username ON Users(username);
+CREATE INDEX idx_users_email ON Users(email);
+CREATE INDEX idx_checkin_user_id ON CheckIn(user_id);
+CREATE INDEX idx_checkin_event_id ON CheckIn(event_id);
+
+-- Add constraints for data integrity
+ALTER TABLE Users
+ADD CONSTRAINT chk_email_format CHECK (email LIKE '%_@__%.__%');
+
+ALTER TABLE CheckIn
+ADD CONSTRAINT fk_checkin_user_id FOREIGN KEY (user_id) REFERENCES Users(user_id),
+ADD CONSTRAINT fk_checkin_event_id FOREIGN KEY (event_id) REFERENCES Events(event_id);
+
+ALTER TABLE Events
+ADD CONSTRAINT chk_event_dates CHECK (start_time < end_time);
+
+-- Add missing foreign key constraints
+ALTER TABLE Guest
+ADD CONSTRAINT fk_guest_user_id FOREIGN KEY (user_id) REFERENCES Users(user_id);
+
+ALTER TABLE Reports
+ADD CONSTRAINT fk_reports_event_id FOREIGN KEY (event_id) REFERENCES Events(event_id);

@@ -1,0 +1,6 @@
+button[type="submit"] {
+    font-size: 14px; /* Make smaller */
+}
+.error-message {
+    color: red;
+}

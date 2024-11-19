@@ -12,8 +12,20 @@ if (!isset($_SESSION['id']))
     exit(); 
 }
 
-// Get the logged-in user's ID from the session
-$user_id = $_SESSION['id']; 
+// Verify CSRF token
+if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+    echo json_encode(['error' => 'Invalid CSRF token']);
+    exit();
+}
+
+// Get the logged-in user's ID from the session and sanitize it
+$user_id = filter_var($_SESSION['id'], FILTER_SANITIZE_NUMBER_INT); 
+
+// Validate user ID
+if (!filter_var($user_id, FILTER_VALIDATE_INT)) {
+    echo json_encode(['error' => 'Invalid user ID']);
+    exit();
+}
 
 try 
 {
@@ -49,8 +61,8 @@ try
 {
     // Log the database error
     error_log('Database error: ' . $e->getMessage()); 
-    // Return an error message
-    echo json_encode(['error' => 'Database error']); 
+    // Return a user-friendly error message
+    echo json_encode(['error' => 'An error occurred while fetching data. Please try again later.']); 
 }
 // Close the database connection
 $conn = null; 

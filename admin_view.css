@@ -1,0 +1,28 @@
+.toggle-button {
+    cursor: pointer;
+    color: blue;
+    text-decoration: underline;
+}
+
+.role-options {
+    display: flex;
+    align-items: center;
+}
+
+.role-options label {
+    display: inline-block;
+    margin-right: 10px;
+    font-size: smaller;
+}
+
+button[type="submit"] {
+    font-size: 14px;
+}
+
+.guest-container {
+    margin-bottom: 20px;
+}
+
+#timer {
+    display: none;
+}

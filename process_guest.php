@@ -9,20 +9,25 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin')
     exit('Unauthorized access');
 }
 
+// CSRF token verification
+if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+    exit('Invalid CSRF token');
+}
+
 // Initialize error message variable
 $error_msg = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') 
 {
-    // Retrieve form data
-    $userId = $_POST['user_id'] ?? null;
-    $name = $_POST['name'] ?? null; // Use the name field from the form data
-    $email = $_POST['email'] ?? null;
-    $phone = $_POST['phone'] ?? null;
-    $rfid_tag = $_POST['rfid_tag'] ?? null;
-    $password = $_POST['password'];
+    // Retrieve and sanitize form data
+    $userId = filter_var($_POST['user_id'] ?? null, FILTER_SANITIZE_NUMBER_INT);
+    $name = filter_var($_POST['name'] ?? null, FILTER_SANITIZE_STRING);
+    $email = filter_var($_POST['email'] ?? null, FILTER_VALIDATE_EMAIL);
+    $phone = filter_var($_POST['phone'] ?? null, FILTER_SANITIZE_STRING);
+    $rfid_tag = filter_var($_POST['rfid_tag'] ?? null, FILTER_SANITIZE_STRING);
+    $password = $_POST['password'] ?? null;
     $password2 = $_POST['password2'] ?? null;
-    $role = $_POST['role'];
+    $role = filter_var($_POST['role'] ?? null, FILTER_SANITIZE_STRING);
 
     // Validate form data
     if (empty($name) || empty($rfid_tag) || empty($password) || empty($role)) 
@@ -77,6 +82,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
                 $stmt->bindParam(':password', $hash);
                 $stmt->bindParam(':role', $role);
                 $stmt->execute();
+                
+                // Regenerate CSRF token after successful form submission
+                $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
             } 
             else 
             {
@@ -123,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
                 } catch (Exception $e) 
                 {
                     $conn->rollBack();
-                    $error_msg = 'Error during operation: ' . $e->getMessage();
+                    $error_msg = 'Error: ' . $e->getMessage();
                 }
             }
         }
@@ -142,6 +150,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
     <title>Process Guest</title>
 </head>
 <body>
-    <?php if (!empty($error_msg)) echo '<p>' . $error_msg . '</p>'; ?>
+    <?php if (!empty($error_msg)) echo '<p>' . htmlspecialchars($error_msg) . '</p>'; ?>
 </body>
 </html>

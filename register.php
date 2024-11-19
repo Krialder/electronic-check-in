@@ -1,24 +1,38 @@
 <?php
 
-//Enable error reporting
+// Enable error reporting
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-//debugging statement
+// Debugging statement
 error_log('register.php beginning');
 
-// Inlucde the database connection from the file
+// Include the database connection from the file
 include 'DB_Connection.php';
 
+// Start session for CSRF token
+session_start();
+
+// Generate CSRF token if not already set
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 // Define variables and initialize with empty values
+$forname = $surname = $name = '';
 $forname_err = $surname_err = $password_err = $name_err = '';
 
-if (isset($_POST['register']))
-{
-    $forname = $_POST['forname'];
-    $surname = $_POST['surname'];
-    $name = $_POST['name'];
-    $email = $_POST['email'];
+if (isset($_POST['register'])) {
+    // CSRF token verification
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        exit('Invalid CSRF token');
+    }
+
+    // Retrieve and sanitize form data
+    $forname = filter_var($_POST['forname'], FILTER_SANITIZE_STRING);
+    $surname = filter_var($_POST['surname'], FILTER_SANITIZE_STRING);
+    $name = filter_var($_POST['name'], FILTER_SANITIZE_STRING);
+    $email = filter_var($_POST['email'], FILTER_VALIDATE_EMAIL);
     $password = $_POST['password'];
     $password2 = $_POST['password2'];
     $role = 'guest';
@@ -38,49 +52,22 @@ if (isset($_POST['register']))
     $user_count = $stmt->fetchColumn();
 
     if ($guest_count > 0 || $user_count > 0) {
-        $name_err = 'Der Benutzername ist nicht verfügbar';
-        // Display the error message and stop execution
-        echo "<script>alert('$name_err'); window.location.href='register.html';</script>";
-        exit;
+        $name_err = 'Username is not available';
     } else {
         // Check if passwords match
-        if ($password !== $password2)
-        {
-            $password_err = 'Passwörter stimmen nicht überein';
-        }
-
-        // Check if name is empty
-        else if (empty($password))
-        {
-            $password_err = 'Bitte geben Sie ein Passwort ein';
-        }
-
-        // Check if forname contains only letters
-        else if (!ctype_alpha($forname))
-        {
-            $forname_err = 'Der Vorname darf nur Buchstaben enthalten';
-        }
-
-        // Check if forname is empty
-        else if (empty($forname))
-        {
-            $forname_err = 'Bitte geben Sie einen Vornamen an';
-        }
-
-        //Check if surname contains only letters
-        else if (!ctype_alpha($surname))
-        {
-            $surname_err = 'Der Nachname darf nur Buchstaben enthalten';
-        }
-
-        // Check if surname is empty
-        else if (empty($surname))
-        {
-            $surname_err = 'Bitte geben Sie einen Nachnamen an';
-        }
-
-        else
-        {
+        if ($password !== $password2) {
+            $password_err = 'Passwords do not match';
+        } elseif (empty($password)) {
+            $password_err = 'Please enter a password';
+        } elseif (!ctype_alpha($forname)) {
+            $forname_err = 'First name can only contain letters';
+        } elseif (empty($forname)) {
+            $forname_err = 'Please enter a first name';
+        } elseif (!ctype_alpha($surname)) {
+            $surname_err = 'Last name can only contain letters';
+        } elseif (empty($surname)) {
+            $surname_err = 'Please enter a last name';
+        } else {
             // Check for existing user IDs and find the first non-existing number
             $sql = "SELECT user_id FROM Guest ORDER BY user_id";
             $stmt = $conn->prepare($sql);
@@ -112,16 +99,13 @@ if (isset($_POST['register']))
             $stmt->bindValue(7, $hashed_password);
 
             // Execute the statement and check if the registration was successful
-            if ($stmt->execute())
-            {
+            if ($stmt->execute()) {
                 echo 'Registration successful';
                 header('location: testy.html');
                 exit;
-            }
-            else
-            {
+            } else {
                 // Output error message if the registration failed
-                echo 'Error: ' . $stmt->errorInfo()[2];
+                echo 'Error: ' . htmlspecialchars($stmt->errorInfo()[2]);
             }
             $stmt = null;
         }

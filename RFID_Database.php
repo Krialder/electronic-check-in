@@ -1,52 +1,49 @@
 <?php
-// Enable error reporting
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
-// Include the database connection
+session_start();
 include 'DB_Connection.php';
 
-// Check if RFID data is received
-if (isset($_POST['rfid'])) 
-{
-    $rfid = $_POST['rfid'];
-    echo "Received RFID: $rfid"; // Debugging statement
+// Check if the user is logged in
+if (!isset($_SESSION['id'])) {
+    echo json_encode(['error' => 'User not logged in']);
+    exit();
+}
 
-    // Check if the RFID tag exists in the Users table
-    $sql = "SELECT user_id FROM Users WHERE rfid_tag = :rfid_tag";
-    $stmt = $conn->prepare($sql);
-    $stmt->bindParam(':rfid_tag', $rfid);
-    $stmt->execute();
+// Verify CSRF token
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        echo json_encode(['error' => 'Invalid CSRF token']);
+        exit();
+    }
 
-    if ($stmt->rowCount() > 0) 
-    {
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        $user_id = $row['user_id'];
+    // Retrieve and sanitize form data
+    $rfid = filter_var($_POST['rfid'] ?? null, FILTER_SANITIZE_STRING);
 
-        // Log the access in the AccessLogs table
-        $sql = "INSERT INTO AccessLogs (user_id, rfid_tag, device_id, status) VALUES (:user_id, :rfid_tag, :device_id, :status)";
+    // Validate form data
+    if (empty($rfid)) {
+        echo json_encode(['error' => 'RFID is required']);
+        exit();
+    }
+
+    try {
+        // Insert RFID data into the database
+        $sql = 'INSERT INTO RFID_Logs (user_id, rfid, timestamp) VALUES (:user_id, :rfid, NOW())';
         $stmt = $conn->prepare($sql);
-        $device_id = 1; // Example device ID
-        $status = 'granted';
-        $stmt->bindParam(':user_id', $user_id);
-        $stmt->bindParam(':rfid_tag', $rfid);
-        $stmt->bindParam(':device_id', $device_id);
-        $stmt->bindParam(':status', $status);
+        $stmt->bindParam(':user_id', $_SESSION['id']);
+        $stmt->bindParam(':rfid', $rfid);
         $stmt->execute();
 
-        echo "Access granted";
-    } 
-    else 
-    {
-        echo "Access denied";
+        echo json_encode(['success' => 'RFID logged successfully']);
+    } catch (PDOException $e) {
+        error_log('Database error: ' . $e->getMessage());
+        echo json_encode(['error' => 'Database error']);
     }
 }
 
-// Handle auto-logout
-if (isset($_POST['auto_logout'])) 
-{
-    // Implement auto-logout logic here
-    echo "Auto-logout successful";
+// Auto-logout logic
+if (isset($_POST['auto_logout']) && $_POST['auto_logout'] === 'true') {
+    session_destroy();
+    echo json_encode(['success' => 'User logged out automatically']);
+    exit();
 }
 
 $conn = null;

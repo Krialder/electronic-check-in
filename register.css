@@ -1,6 +1,5 @@
 /* Default Dark Mode Styles */
-body
-{
+body {
     font-family: Arial, sans-serif;
     background-color: #121212;
     color: #e0e0e0;
@@ -13,16 +12,14 @@ body
     height: 100vh;
 }
 
-h1 
-{
+h1 {
     color: #e0e0e0;
     text-align: center;
     margin-bottom: 20px;
     font-size: 2em;
 }
 
-form 
-{
+form {
     max-width: 500px;
     width: 100%;
     margin: 0 auto;
@@ -32,8 +29,7 @@ form
     box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
 }
 
-label 
-{
+label {
     display: block;
     margin-bottom: 5px;
     color: #e0e0e0;
@@ -42,8 +38,7 @@ label
 
 input[type="text"],
 input[type="email"],
-input[type="password"] 
-{
+input[type="password"] {
     width: 100%;
     padding: 10px;
     margin-bottom: 15px;
@@ -55,8 +50,7 @@ input[type="password"]
     font-size: 1em;
 }
 
-input[type="submit"] 
-{
+input[type="submit"] {
     width: 100%; /* Adjust width to match input fields */
     padding: 10px;
     background-color: #444;
@@ -69,33 +63,28 @@ input[type="submit"]
     transition: background-color 0.3s ease;
 }
 
-input[type="submit"]:hover 
-{
+input[type="submit"]:hover {
     background-color: #575757;
 }
 
-span 
-{
+span {
     color: red;
     font-size: 0.9em;
     display: block;
     margin-bottom: 10px;
 }
 
-/* Add styling for the login link */
-a[href="http://localhost/Testy.html"] 
-{
+/* Remove styling for the old back link */
+a[href="http://localhost/Testy.html"] {
     display: none;
 }
 
-a[href="http://localhost/Testy.html"]:hover 
-{
+a[href="http://localhost/Testy.html"]:hover {
     text-decoration: underline;
 }
 
-/* Add styling for the login button */
-a.return-button
-{
+/* Ensure the new return button has the correct styles */
+button.return-button {
     display: block;
     width: 100%; /* Adjust width to match input fields */
     padding: 10px;
@@ -111,8 +100,7 @@ a.return-button
     transition: background-color 0.3s ease;
 }
 
-a.return-button:hover 
-{
+button.return-button:hover {
     background-color: #575757;
 }
 
