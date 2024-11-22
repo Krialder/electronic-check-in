@@ -9,25 +9,20 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin')
     exit('Unauthorized access');
 }
 
-// CSRF token verification
-if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-    exit('Invalid CSRF token');
-}
-
 // Initialize error message variable
 $error_msg = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') 
 {
-    // Retrieve and sanitize form data
-    $userId = filter_var($_POST['user_id'] ?? null, FILTER_SANITIZE_NUMBER_INT);
-    $name = filter_var($_POST['name'] ?? null, FILTER_SANITIZE_STRING);
-    $email = filter_var($_POST['email'] ?? null, FILTER_VALIDATE_EMAIL);
-    $phone = filter_var($_POST['phone'] ?? null, FILTER_SANITIZE_STRING);
-    $rfid_tag = filter_var($_POST['rfid_tag'] ?? null, FILTER_SANITIZE_STRING);
+    // Retrieve form data
+    $userId = $_POST['user_id'] ?? null;
+    $name = $_POST['name'] ?? null; // Use the name field from the form data
+    $email = $_POST['email'] ?? null;
+    $phone = $_POST['phone'] ?? null;
+    $rfid_tag = $_POST['rfid_tag'] ?? null;
     $password = $_POST['password'] ?? null;
     $password2 = $_POST['password2'] ?? null;
-    $role = filter_var($_POST['role'] ?? null, FILTER_SANITIZE_STRING);
+    $role = $_POST['role'] ?? null;
 
     // Validate form data
     if (empty($name) || empty($rfid_tag) || empty($password) || empty($role)) 
@@ -82,9 +77,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
                 $stmt->bindParam(':password', $hash);
                 $stmt->bindParam(':role', $role);
                 $stmt->execute();
-                
-                // Regenerate CSRF token after successful form submission
-                $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
             } 
             else 
             {
@@ -107,38 +99,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
                     $password = $password ?: $guestData['password'];
                     $role = $role ?: $guestData['role'];
 
-                    // Insert into Users table
-                    $sql = 'INSERT INTO Users (user_id, name, email, phone, rfid_tag, password, role) VALUES (:user_id, :name, :email, :phone, :rfid_tag, :password, :role)';
-                    $stmt = $conn->prepare($sql);
-                    $stmt->bindParam(':user_id', $newUserId);
-                    $stmt->bindParam(':name', $name);
-                    $stmt->bindParam(':email', $email);
-                    $stmt->bindParam(':phone', $phone);
-                    $stmt->bindParam(':rfid_tag', $rfid_tag);
-                    $stmt->bindParam(':password', $hash);
-                    $stmt->bindParam(':role', $role);
-                    $stmt->execute();
+                    // Ensure all required fields are filled in
+                    if (empty($name) || empty($rfid_tag) || empty($password) || empty($role)) 
+                    {
+                        $error_msg = 'Please fill in all required fields';
+                    } 
+                    else 
+                    {
+                        // Insert into Users table
+                        $sql = 'INSERT INTO Users (user_id, name, email, phone, rfid_tag, password, role) VALUES (:user_id, :name, :email, :phone, :rfid_tag, :password, :role)';
+                        $stmt = $conn->prepare($sql);
+                        $stmt->bindParam(':user_id', $newUserId);
+                        $stmt->bindParam(':name', $name);
+                        $stmt->bindParam(':email', $email);
+                        $stmt->bindParam(':phone', $phone);
+                        $stmt->bindParam(':rfid_tag', $rfid_tag);
+                        $stmt->bindParam(':password', $hash);
+                        $stmt->bindParam(':role', $role);
+                        $stmt->execute();
 
-                    // Delete from Guest table
-                    $sql = 'DELETE FROM Guest WHERE user_id = :user_id';
-                    $stmt = $conn->prepare($sql);
-                    $stmt->bindParam(':user_id', $userId);
-                    $stmt->execute();
+                        // Delete from Guest table
+                        $sql = 'DELETE FROM Guest WHERE user_id = :user_id';
+                        $stmt = $conn->prepare($sql);
+                        $stmt->bindParam(':user_id', $userId);
+                        $stmt->execute();
 
-                    $conn->commit();
-                    header('Location: /account-settings.html?success=1'); // Redirect to the HTML page with success message
-                    exit();
-                } catch (Exception $e) 
+                        $conn->commit();
+                        header('Location: http://localhost/account-settings.html?success=1'); // Redirect to the HTML page with success message
+                        exit();
+                    }
+                } 
+                catch (Exception $e) 
                 {
-                    $conn->rollBack();
-                    $error_msg = 'Error: ' . $e->getMessage();
+                    $error_msg = 'Error during operation: ' . $e->getMessage();
                 }
             }
         }
     }
 
     // Redirect back to account-settings.html with error message and user ID
-    header('Location: /account-settings.html?error=' . urlencode($error_msg) . '&user_id=' . urlencode($userId));
+    header('Location: http://localhost/account-settings.html?error=' . urlencode($error_msg) . '&user_id=' . urlencode($userId));
     exit();
 }
 ?>
@@ -148,8 +148,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
 <head>
     <meta charset="UTF-8">
     <title>Process Guest</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Link to the CSS file -->
 </head>
 <body>
-    <?php if (!empty($error_msg)) echo '<p>' . htmlspecialchars($error_msg) . '</p>'; ?>
+    <?php if (!empty($error_msg)) echo '<p>' . $error_msg . '</p>'; ?>
 </body>
 </html>
