@@ -1,23 +1,21 @@
 CREATE DATABASE IF NOT EXISTS kde_test2;
 USE kde_test2;
 
--- Create Users table
 CREATE TABLE IF NOT EXISTS Users 
 (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL UNIQUE, -- Add UNIQUE constraint
+    email VARCHAR(255) NOT NULL UNIQUE,
     phone VARCHAR(20),
-    rfid_tag VARCHAR(255) NOT NULL UNIQUE, -- Add UNIQUE constraint
+    rfid_tag VARCHAR(255) NOT NULL UNIQUE,
     role VARCHAR(50),
     password VARCHAR(255) NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX (email), -- Add index on email
-    INDEX (rfid_tag) -- Add index on rfid_tag
+    INDEX (email),
+    INDEX (rfid_tag)
 );
 
--- Create Guest table
 CREATE TABLE IF NOT EXISTS Guest
 (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -27,11 +25,10 @@ CREATE TABLE IF NOT EXISTS Guest
     rfid_tag VARCHAR(255),
     role VARCHAR(50),
     password VARCHAR(255) NOT NULL,
-    INDEX (email), -- Add index on email
-    INDEX (rfid_tag) -- Add index on rfid_tag
+    INDEX (email),
+    INDEX (rfid_tag)
 );
 
--- Create Events table
 CREATE TABLE IF NOT EXISTS Events 
 (
     event_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -41,10 +38,9 @@ CREATE TABLE IF NOT EXISTS Events
     end_time DATETIME,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX (event_name) -- Add index on event_name
+    INDEX (event_name)
 );
 
--- Create Check-In table
 CREATE TABLE IF NOT EXISTS CheckIn 
 (
     checkin_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -56,22 +52,20 @@ CREATE TABLE IF NOT EXISTS CheckIn
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES Users(user_id),
     FOREIGN KEY (event_id) REFERENCES Events(event_id),
-    INDEX (user_id), -- Add index on user_id
-    INDEX (event_id) -- Add index on event_id
+    INDEX (user_id),
+    INDEX (event_id)
 );
 
--- Create RFID Devices table
 CREATE TABLE IF NOT EXISTS RFIDDevices 
 (
     device_id INT AUTO_INCREMENT PRIMARY KEY,
     device_name VARCHAR(255),
     location VARCHAR(255),
     ip_address VARCHAR(255),
-    INDEX (device_name), -- Add index on device_name
-    INDEX (ip_address) -- Add index on ip_address
+    INDEX (device_name),
+    INDEX (ip_address)
 );
 
--- Create AccessLogs table
 CREATE TABLE IF NOT EXISTS AccessLogs 
 (
     log_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -84,12 +78,11 @@ CREATE TABLE IF NOT EXISTS AccessLogs
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES Users(user_id),
     FOREIGN KEY (device_id) REFERENCES RFIDDevices(device_id),
-    INDEX (user_id), -- Add index on user_id
-    INDEX (rfid_tag), -- Add index on rfid_tag
-    INDEX (device_id) -- Add index on device_id
+    INDEX (user_id),
+    INDEX (rfid_tag),
+    INDEX (device_id)
 );
 
--- Create Reports table
 CREATE TABLE IF NOT EXISTS Reports 
 (
     report_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -99,65 +92,34 @@ CREATE TABLE IF NOT EXISTS Reports
     generated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (event_id) REFERENCES Events(event_id),
-    INDEX (event_id) -- Add index on event_id
+    INDEX (event_id)
 );
 
--- Insert example data into Users table
--- Use placeholders for password hashing in PHP
 INSERT INTO Users (name, email, phone, rfid_tag, role, password)
 VALUES 
-('John Doe', 'john.doe@example.com', '1234567890', 'RFID123456', 'admin', :hashed_password1),
-('Jane Smith', 'jane.smith@example.com', '0987654321', 'RFID654321', 'user', :hashed_password2);
+('John Doe', 'john.doe@example.com', '1234567890', 'RFID123456', 'admin', PASSWORD('password123')),
+('Jane Smith', 'jane.smith@example.com', '0987654321', 'RFID654321', 'user', PASSWORD('password456'));
 
--- Insert example data into Events table
 INSERT INTO Events (event_name, location, start_time, end_time)
 VALUES 
 ('Tech Conference', 'Conference Hall A', '2023-10-01 09:00:00', '2023-10-01 17:00:00');
 
--- Insert example data into CheckIn table
 INSERT INTO CheckIn (user_id, event_id, checkin_time, status)
 VALUES 
 (1, 1, '2023-10-01 09:05:00', 'checked-in'),
 (2, 1, '2023-10-01 09:10:00', 'checked-in');
 
--- Insert example data into RFIDDevices table
 INSERT INTO RFIDDevices (device_name, location, ip_address)
 VALUES 
 ('Entrance Scanner', 'Main Entrance', '192.168.1.10'),
 ('Conference Room Scanner', 'Conference Hall A', '192.168.1.11');
 
--- Insert example data into AccessLogs table
 INSERT INTO AccessLogs (user_id, rfid_tag, device_id, access_time, status)
 VALUES 
 (1, 'RFID123456', 1, '2023-10-01 09:00:00', 'granted'),
 (2, 'RFID654321', 1, '2023-10-01 09:05:00', 'granted'),
 (1, 'RFID123456', 2, '2023-10-01 09:05:00', 'granted');
 
--- Insert example data into Reports table
 INSERT INTO Reports (event_id, total_checkins, avg_checkin_time)
 VALUES 
 (1, 2, '00:05:00');
-
--- Add indexes on frequently queried columns
-CREATE INDEX idx_users_username ON Users(username);
-CREATE INDEX idx_users_email ON Users(email);
-CREATE INDEX idx_checkin_user_id ON CheckIn(user_id);
-CREATE INDEX idx_checkin_event_id ON CheckIn(event_id);
-
--- Add constraints for data integrity
-ALTER TABLE Users
-ADD CONSTRAINT chk_email_format CHECK (email LIKE '%_@__%.__%');
-
-ALTER TABLE CheckIn
-ADD CONSTRAINT fk_checkin_user_id FOREIGN KEY (user_id) REFERENCES Users(user_id),
-ADD CONSTRAINT fk_checkin_event_id FOREIGN KEY (event_id) REFERENCES Events(event_id);
-
-ALTER TABLE Events
-ADD CONSTRAINT chk_event_dates CHECK (start_time < end_time);
-
--- Add missing foreign key constraints
-ALTER TABLE Guest
-ADD CONSTRAINT fk_guest_user_id FOREIGN KEY (user_id) REFERENCES Users(user_id);
-
-ALTER TABLE Reports
-ADD CONSTRAINT fk_reports_event_id FOREIGN KEY (event_id) REFERENCES Events(event_id);

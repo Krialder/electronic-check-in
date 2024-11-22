@@ -95,11 +95,11 @@ if ($stmt->rowCount() > 0) {
         $name = htmlspecialchars($row['name']);
         echo '<div class="guest-container">';
         echo '<div class="guest-header">';
-        echo '<span class="toggle-button guest-id" onclick="toggleGuestFields(\'' . $userId . '\', \'' . $nextFreeUserId . '\')">' . $name . '</span>';
+        echo '<span class="toggle-button guest-id" onclick="toggleGuestFields(\'' . $userId . '\')">' . $name . '</span>';
         echo '</div>';
-        echo '<div id="guest-fields-' . $userId . '" class="guest-fields section open">'; // Add 'open' class to make it visible
+        echo '<div id="guest-fields-' . $userId . '" class="guest-fields section" style="display: none;">'; // Hide initially
         echo '<span id="guest-id-display-' . $userId . '" class="guest-id-display always-visible">Guest ID: ' . $userId . ' | User ID: ' . $nextFreeUserId . '</span>';
-        echo '<form action="process_guest.php" method="post">'; // Update form action
+        echo '<form action="process_guest.php" method="post" onsubmit="return confirmSaveSettings(this)">'; // Update form action and add confirmation
         
         echo '<input type="hidden" name="user_id" value="' . $userId . '">';
         
@@ -118,7 +118,7 @@ if ($stmt->rowCount() > 0) {
         // RFID input and button to assign RFID
         echo '<label>*RFID Tag:</label>';
         echo '<input type="text" id="rfid_' . $userId . '" name="rfid_tag" value="' . htmlspecialchars($row['rfid_tag']) . '">';
-        echo '<button type="button" onclick="startRFIDScan(\'' . $userId . '\')">Scan RFID</button><br>';
+        echo '<button type="button" onclick="startRFIDScan(\'' . $userId . '\')" class="small-button">Scan RFID</button><br>';
         
         // Timer display for RFID scan
         echo '<div id="timer_' . $userId . '" style="display: none;"></div><br>';
@@ -135,9 +135,9 @@ if ($stmt->rowCount() > 0) {
         echo '</div><br>';
         
         // Submit button for each guest
-        echo '<button type="submit" name="save_guest" onclick="return confirmSaveSettings(this.form)">Save Settings</button>';
+        echo '<button type="submit" name="save_guest">Save Settings</button>';
         // Add delete button for each guest
-        echo '<button type="button" class="delete-button" onclick="confirmDeleteGuest(' . $userId . ')">Delete Guest</button>';
+        echo '<button type="submit" name="delete_guest" class="delete-button" onclick="return confirmDeleteGuest(' . $userId . ')">Delete Guest</button>';
         echo '</form>';
         echo '<p style="font-size: smaller;">* pflichtfeld</p>';
         echo '</div>';
@@ -162,7 +162,22 @@ $conn = null;
 <script>
     function confirmDeleteGuest(userId) {
         if (confirm('Are you sure you want to delete this guest?')) {
-            window.location.href = 'delete_guest.php?user_id=' + userId;
+            fetch('delete_guest.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: 'user_id=' + userId
+            })
+            .then(response => response.text())
+            .then(data => {
+                alert('Guest deleted successfully!');
+                window.location.href = 'account-settings.html';
+            })
+            .catch(error => {
+                console.error('Error deleting guest:', error);
+                alert('Error deleting guest.');
+            });
         }
     }
 

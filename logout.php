@@ -10,7 +10,7 @@ if (ini_get('session.use_cookies'))
 {
     $params = session_get_cookie_params();
     // Set the session cookie to expire in the past
-    setcookie(session_name(), '', time() - 42000,
+    setcookie('session_name', '', time() - 42000,
         $params['path'], $params['domain'],
         $params['secure'], $params['httponly']
     );
@@ -20,6 +20,6 @@ if (ini_get('session.use_cookies'))
 session_destroy();
 
 // Redirect to the specified page
-header('Location: /login.html');
+header('Location: /Testy.html');
 exit();
 ?>

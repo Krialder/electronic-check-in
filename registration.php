@@ -15,44 +15,42 @@ $user_role = $_SESSION['role'] === 'admin';
 // Exit if the user is not an admin
 if (!$user_role) 
 {
-    echo 'Access denied. Only admins can register users.';
     exit(); 
-}
-
-// Validate CSRF token
-if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-    exit('Invalid CSRF token');
 }
 
 if (isset($_POST['register']))
 {
-    // Retrieve and sanitize form data
-    $forname = filter_var($_POST['Vorname'], FILTER_SANITIZE_STRING);
-    $surname = filter_var($_POST['Nachname'], FILTER_SANITIZE_STRING);
-    $email = filter_var($_POST['email'], FILTER_VALIDATE_EMAIL);
+    // Retrieve form data
+    $forname = $_POST['Vorname'];
+    $surname = $_POST['Nachname'];
+    $email = $_POST['email'];
     $password = $_POST['password'];
     $password2 = $_POST['password2'];
 
-    // Validate passwords
+    // Validate passwords||Passwords do not match
     if ($password !== $password2)
     {  
-        $password_err = 'Passwords do not match'; 
+        $password_err = 'Passwörter stimmen nicht überein'; 
     }
+     // Password is empty
     else if (empty($password))
     {
-        $password_err = 'Please enter a password'; 
+        $password_err = 'Bitte geben Sie ein Passwort ein'; 
     }
+    // Email is empty
     else if (empty($email))
     {
-        $email_err = 'Please enter an email address'; 
+        $email_err = 'Bitte geben Sie eine E-Mail-Adresse ein'; 
     }
+    // Forename is empty
     else if (empty($forname))
     {
-        $forname_err = 'Please enter a forename'; 
+        $forname_err = 'Bitte geben Sie einen Vornamen an'; 
     }
+    // Surname is empty
     else if (empty($surname))
     {
-        $surname_err = 'Please enter a surname'; 
+        $surname_err = 'Bitte geben Sie einen Nachnamen an'; 
     }
     else
     {
@@ -60,7 +58,7 @@ if (isset($_POST['register']))
         $name = $forname . ' ' . $surname;
         
         // Hash the password
-        $hash = password_hash($password, PASSWORD_BCRYPT);
+        $hash = password_hash($password, PASSWORD_DEFAULT);
         
         // Prepare SQL statement to insert user data
         $sql = 'INSERT INTO Users (name, email, password) VALUES (:name, :email, :password)';
@@ -69,15 +67,10 @@ if (isset($_POST['register']))
         // Bind parameters
         $stmt->bindParam(':name', $name);
         $stmt->bindParam(':email', $email);
+        // Use hashed password
         $stmt->bindParam(':password', $hash); 
         
         // Execute the statement
-        try {
-            $stmt->execute();
-            echo 'User registered successfully';
-        } catch (PDOException $e) {
-            error_log('Database error: ' . $e->getMessage());
-            echo 'An error occurred while registering the user.';
-        }
+        $stmt->execute();       
     }
 }

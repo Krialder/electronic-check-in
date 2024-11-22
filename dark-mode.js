@@ -17,15 +17,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Save dark mode setting to localStorage on form submission
+    // Save dark mode setting to cookies on form submission
     document.getElementById('settings-form').addEventListener('submit', (event) => {
         event.preventDefault();
         const formData = new FormData(event.target);
 
         if (themeToggle.checked) {
-            localStorage.setItem('darkMode', 'enabled');
+            document.cookie = "darkMode=enabled; path=/";
         } else {
-            localStorage.setItem('darkMode', 'disabled');
+            document.cookie = "darkMode=disabled; path=/";
         }
 
         fetch('update_settings.php', {
@@ -35,20 +35,11 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(response => response.text())
         .then(data => {
             document.getElementById('error-message').textContent = data;
+            // Redirect to account-settings.html after saving
+            window.location.href = 'http://localhost/account-settings.html';
         })
         .catch(error => {
             console.error('Error:', error);
         });
     });
 });
-
-function displayErrorMessage() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const errorMessage = urlParams.get('error');
-    const userId = urlParams.get('user_id');
-    if (errorMessage && userId) {
-        const errorDiv = document.createElement('div');
-        errorDiv.textContent = `Error: ${errorMessage}`;
-        document.getElementById('error-message').appendChild(errorDiv);
-    }
-}

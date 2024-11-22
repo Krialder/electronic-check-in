@@ -1,5 +1,6 @@
 /* Default Dark Mode Styles */
 body {
+    
     font-family: Arial, sans-serif;
     background-color: #121212;
     color: #e0e0e0;
@@ -13,6 +14,7 @@ body {
 }
 
 h1 {
+    
     color: #e0e0e0;
     text-align: center;
     margin-bottom: 20px;
@@ -20,6 +22,7 @@ h1 {
 }
 
 form {
+    
     max-width: 500px;
     width: 100%;
     margin: 0 auto;
@@ -30,6 +33,7 @@ form {
 }
 
 label {
+    
     display: block;
     margin-bottom: 5px;
     color: #e0e0e0;
@@ -39,6 +43,7 @@ label {
 input[type="text"],
 input[type="email"],
 input[type="password"] {
+    
     width: 100%;
     padding: 10px;
     margin-bottom: 15px;
@@ -50,7 +55,8 @@ input[type="password"] {
     font-size: 1em;
 }
 
-input[type="submit"] {
+input[type="submit"],
+a.return-button {
     width: 100%; /* Adjust width to match input fields */
     padding: 10px;
     background-color: #444;
@@ -63,7 +69,8 @@ input[type="submit"] {
     transition: background-color 0.3s ease;
 }
 
-input[type="submit"]:hover {
+input[type="submit"]:hover,
+a.return-button:hover {
     background-color: #575757;
 }
 
@@ -74,7 +81,7 @@ span {
     margin-bottom: 10px;
 }
 
-/* Remove styling for the old back link */
+/* Add styling for the login link */
 a[href="http://localhost/Testy.html"] {
     display: none;
 }
@@ -83,8 +90,8 @@ a[href="http://localhost/Testy.html"]:hover {
     text-decoration: underline;
 }
 
-/* Ensure the new return button has the correct styles */
-button.return-button {
+/* Add styling for the login button */
+a.return-button {
     display: block;
     width: 100%; /* Adjust width to match input fields */
     padding: 10px;
@@ -100,11 +107,12 @@ button.return-button {
     transition: background-color 0.3s ease;
 }
 
-button.return-button:hover {
+a.return-button:hover {
     background-color: #575757;
 }
 
 p {
+    
     font-size: 0.9em;
     color: #e0e0e0;
     margin-top: 10px;

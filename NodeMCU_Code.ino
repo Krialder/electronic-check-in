@@ -3,7 +3,13 @@
 #include <NTPClient.h>
 #include <WiFiUdp.h>
 #include <ESP8266WebServer.h>
-#include "config.h" // Include configuration file for Wi-Fi credentials and server URL
+
+// Wi-Fi credentials
+const char* ssid = "Luftuberwachungssystem";
+const char* password = "Ux957Zi%xqbY6vPHCm#4X";
+
+// Server URL
+const char* serverName = "http://192.168.2.150/kde_test2_endpoint"; // Update to match the specific database endpoint
 
 // Baud rate for serial communication with Mega 2560
 #define BAUD_RATE 9600
@@ -22,7 +28,7 @@ void setup()
 
     // Wait for the Wi-Fi to connect
     int attempts = 0;
-    while (WiFi.status() != WL_CONNECTED && attempts < 20) 
+    while (WiFi.waitForConnectResult() != WL_CONNECTED && attempts < 20) 
     {
         delay(2000);
         Serial.print("Connecting to Wi-Fi...");
@@ -45,7 +51,6 @@ void setup()
     else 
     {
         Serial.println("Failed to connect to Wi-Fi");
-        return; // Exit setup if Wi-Fi connection fails
     }
 
     // Initialize NTP Client
@@ -73,7 +78,7 @@ void loop()
         String rfidTag = Serial.readStringUntil('\n');
         rfidTag.trim(); // Remove any whitespace/newline characters
 
-        if (rfidTag.length() > 0 && rfidTag.length() <= 10) // Validate RFID tag length
+        if (rfidTag.length() > 0) 
         {
             // Send RFID data to the server
             if (WiFi.status() == WL_CONNECTED) 
@@ -92,7 +97,7 @@ void loop()
                 } 
                 else 
                 {
-                    Serial.printf("Error sending POST request: %s\n", http.errorToString(httpResponseCode).c_str());
+                    Serial.println("Error sending POST request");
                 }
                 // Close the connection
                 http.end(); 
@@ -101,10 +106,6 @@ void loop()
             {
                 Serial.println("Wi-Fi not connected");
             }
-        }
-        else
-        {
-            Serial.println("Invalid RFID tag length");
         }
     }
     server.handleClient();
@@ -128,7 +129,7 @@ void autoLogout()
         } 
         else 
         {
-            Serial.printf("Error sending auto-logout POST request: %s\n", http.errorToString(httpResponseCode).c_str());
+            Serial.println("Error sending auto-logout POST request");
         }
 
         http.end(); // Close the connection

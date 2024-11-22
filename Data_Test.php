@@ -5,13 +5,6 @@ include 'DB_Connection.php';
 // Function to fetch and display data from a table
 function fetchData($conn, $table) 
 {
-    // Sanitize table name
-    $allowedTables = ['Users', 'Events', 'CheckIn', 'RFIDDevices'];
-    if (!in_array($table, $allowedTables)) {
-        echo "Invalid table name";
-        return;
-    }
-
     $sql = "SELECT * FROM $table";
     $stmt = $conn->query($sql);
 

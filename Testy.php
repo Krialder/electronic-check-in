@@ -1,94 +1,88 @@
 <?php
 
-//Enable error reporting
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-//debugging statement
 error_log('testy.php beginning');
 echo('hi<br/>');
-// Initialize the session
 session_start();
 
-// Generate CSRF token if not already set
-if (empty($_SESSION['csrf_token'])) {
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-}
-$csrf_token = $_SESSION['csrf_token'];
-
-// Check if the user is already logged in, if yes then redirect him to welcome page
 if(isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true)
 {
     header('location: dashboard.html');
     exit;
 }
 
-// Include config file
 include 'DB_Connection.php';
 
-// Check if the connection was successful
-if ($conn === false) {
-    die('ERROR: Could not connect. ' . mysqli_connect_error());
-}
-
-// Define variables and initialize with empty values
 $name = $password = '';
 $name_err = $password_err = $login_err = '';
 
-// Processing form data when form is submitted
 if($_SERVER['REQUEST_METHOD'] == 'POST')
 {
-    // Check CSRF token
-    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-        exit('Invalid CSRF token');
+    error_log('Form submitted');
+    echo('form submitted<br/>');
+
+    if(empty(trim($_POST['name'])))
+    {
+        $name_err = 'Please enter name.';
+        error_log('name is empty');
+        echo('name is empty<br/>');
     }
+    else
+    {
+        $name = trim($_POST['name']);
+    }
+    
+    if(empty(trim($_POST['password'])))
+    {
+        $password_err = 'Please enter your password.';
+        error_log('Password is empty');
+        echo('password is empty<br/>');
+    } 
+    else
+    {
+        $password = trim($_POST['password']);
+    }
+    
+    if(empty($name_err) && empty($password_err))
+    {
+        $sql = 'SELECT user_id, name, password, email, role FROM Users WHERE name = :name';
+        
+        if($stmt = $conn->prepare($sql))
+        {
+            $stmt->bindValue(':name', $name, PDO::PARAM_STR);
+        
+            if($stmt->execute())
+            {
+                $user = $stmt->fetch(PDO::FETCH_ASSOC);
+                    
+                error_log('Hashed password from DB: ' . $user['password']);
+                echo 'Hashed password from DB: ' . $user['password'] . '<br/>';
 
-    // Retrieve and sanitize form data
-    $username = filter_var($_POST['username'] ?? null, FILTER_SANITIZE_STRING);
-    $email = filter_var($_POST['email'] ?? null, FILTER_VALIDATE_EMAIL);
-    $password = filter_var($_POST['password'] ?? null, FILTER_SANITIZE_STRING);
-    $confirm_password = filter_var($_POST['confirm_password'] ?? null, FILTER_SANITIZE_STRING);
+                if (password_verify($password, $user['password'])) 
+                {
+                    $_SESSION['loggedin'] = true;
+                    $_SESSION['id'] = $user['user_id'];
+                    $_SESSION['email'] = $user['email'];
+                    $_SESSION['name'] = $user['name'];
+                    $_SESSION['role'] = $user['role'];
 
-    // Validate form data
-    if (empty($username) || empty($email) || empty($password) || empty($confirm_password)) {
-        $error_msg = 'Please fill in all required fields';
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $error_msg = 'Invalid email format';
-    } elseif ($password !== $confirm_password) {
-        $error_msg = 'Passwords do not match';
-    } else {
-        // Check if username or email already exists
-        $sql = 'SELECT COUNT(*) FROM Users WHERE username = :username OR email = :email';
-        $stmt = $conn->prepare($sql);
-        $stmt->bindParam(':username', $username);
-        $stmt->bindParam(':email', $email);
-        $stmt->execute();
-        $count = $stmt->fetchColumn();
-
-        if ($count > 0) {
-            $error_msg = 'Username or email already exists';
-        } else {
-            // Hash the password
-            $hash = password_hash($password, PASSWORD_BCRYPT);
-
-            // Insert user data into the database
-            $sql = 'INSERT INTO Users (username, email, password) VALUES (:username, :email, :password)';
-            $stmt = $conn->prepare($sql);
-            $stmt->bindParam(':username', $username);
-            $stmt->bindParam(':email', $email);
-            $stmt->bindParam(':password', $hash);
-            $stmt->execute();
-
-            // Redirect to the specified page with success message
-            header('Location: /login.html?success=1');
-            exit();
+                    error_log('Redirecting to /dashboard.html');
+                    echo('Redirecting to /dashboard.html<br/>');
+                        
+                    header('location: /dashboard.html');
+                    exit();
+                }
+                else
+                {
+                    $password_err = 'The password you entered was not valid.';
+                }
+        
+                unset($stmt);
+            }
         }
     }
-
-    // Redirect back to register.html with error message
-    header('Location: /register.html?error=' . urlencode($error_msg));
-    exit();
 }
-// Close connection
 $conn = null;
 ?>

@@ -20,9 +20,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
     $email = $_POST['email'] ?? null;
     $phone = $_POST['phone'] ?? null;
     $rfid_tag = $_POST['rfid_tag'] ?? null;
-    $password = $_POST['password'] ?? null;
+    $password = $_POST['password'];
     $password2 = $_POST['password2'] ?? null;
-    $role = $_POST['role'] ?? null;
+    $role = $_POST['role'];
 
     // Validate form data
     if (empty($name) || empty($rfid_tag) || empty($password) || empty($role)) 
@@ -80,8 +80,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
             } 
             else 
             {
-                // Transfer guest to Users table
-                $conn->beginTransaction();
                 try 
                 {
                     // Fetch guest data from Guest table
@@ -99,37 +97,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
                     $password = $password ?: $guestData['password'];
                     $role = $role ?: $guestData['role'];
 
-                    // Ensure all required fields are filled in
-                    if (empty($name) || empty($rfid_tag) || empty($password) || empty($role)) 
-                    {
-                        $error_msg = 'Please fill in all required fields';
-                    } 
-                    else 
-                    {
-                        // Insert into Users table
-                        $sql = 'INSERT INTO Users (user_id, name, email, phone, rfid_tag, password, role) VALUES (:user_id, :name, :email, :phone, :rfid_tag, :password, :role)';
-                        $stmt = $conn->prepare($sql);
-                        $stmt->bindParam(':user_id', $newUserId);
-                        $stmt->bindParam(':name', $name);
-                        $stmt->bindParam(':email', $email);
-                        $stmt->bindParam(':phone', $phone);
-                        $stmt->bindParam(':rfid_tag', $rfid_tag);
-                        $stmt->bindParam(':password', $hash);
-                        $stmt->bindParam(':role', $role);
-                        $stmt->execute();
+                    // Insert into Users table
+                    $sql = 'INSERT INTO Users (user_id, name, email, phone, rfid_tag, password, role) VALUES (:user_id, :name, :email, :phone, :rfid_tag, :password, :role)';
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bindParam(':user_id', $newUserId);
+                    $stmt->bindParam(':name', $name);
+                    $stmt->bindParam(':email', $email);
+                    $stmt->bindParam(':phone', $phone);
+                    $stmt->bindParam(':rfid_tag', $rfid_tag);
+                    $stmt->bindParam(':password', $hash);
+                    $stmt->bindParam(':role', $role);
+                    $stmt->execute();
 
-                        // Delete from Guest table
-                        $sql = 'DELETE FROM Guest WHERE user_id = :user_id';
-                        $stmt = $conn->prepare($sql);
-                        $stmt->bindParam(':user_id', $userId);
-                        $stmt->execute();
+                    // Delete from Guest table
+                    $sql = 'DELETE FROM Guest WHERE user_id = :user_id';
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bindParam(':user_id', $userId);
+                    $stmt->execute();
 
-                        $conn->commit();
-                        header('Location: http://localhost/account-settings.html?success=1'); // Redirect to the HTML page with success message
-                        exit();
-                    }
-                } 
-                catch (Exception $e) 
+                    // Update guest details
+                    $sql = 'UPDATE Guest SET name = :name, email = :email, phone = :phone, rfid_tag = :rfid_tag, password = :password, role = :role WHERE user_id = :user_id';
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bindParam(':name', $name);
+                    $stmt->bindParam(':email', $email);
+                    $stmt->bindParam(':phone', $phone);
+                    $stmt->bindParam(':rfid_tag', $rfid_tag);
+                    $stmt->bindParam(':password', $password);
+                    $stmt->bindParam(':role', $role);
+                    $stmt->bindParam(':user_id', $userId);
+                    $stmt->execute();
+
+                    // Update user IDs to be sequential
+                    $sql = 'SET @count = 0';
+                    $conn->exec($sql);
+                    $sql = 'UPDATE Guest SET user_id = @count:= @count + 1';
+                    $conn->exec($sql);
+                    $sql = 'ALTER TABLE Guest AUTO_INCREMENT = 1';
+                    $conn->exec($sql);
+
+                    header('Location: /account-settings.html?success=1'); // Redirect to the HTML page with success message
+                    exit();
+                } catch (Exception $e) 
                 {
                     $error_msg = 'Error during operation: ' . $e->getMessage();
                 }
@@ -137,8 +145,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
         }
     }
 
+    if (isset($_POST['delete_guest'])) {
+        // Handle delete guest action
+        $sql = 'DELETE FROM Guest WHERE user_id = :user_id';
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':user_id', $userId);
+        $stmt->execute();
+
+        header('Location: /account-settings.html?success=Guest deleted successfully');
+        exit();
+    }
+
     // Redirect back to account-settings.html with error message and user ID
-    header('Location: http://localhost/account-settings.html?error=' . urlencode($error_msg) . '&user_id=' . urlencode($userId));
+    header('Location: /account-settings.html?error=' . urlencode($error_msg) . '&user_id=' . urlencode($userId));
     exit();
 }
 ?>

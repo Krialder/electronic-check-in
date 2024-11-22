@@ -1,141 +1,117 @@
-/* Define CSS variables for light and dark themes */
-:root {
-    --background-color: #ffffff;
-    --text-color: #000000;
-    --navbar-background-color: #f8f9fa;
-    --navbar-text-color: #000000;
-    --primary-color: #007bff;
-    --hover-color: #0056b3;
-    --border-radius: 5px;
-    --transition-duration: 0.3s;
-}
-
-.dark-mode {
-    --background-color: #121212;
-    --text-color: #ffffff;
-    --navbar-background-color: #333333;
-    --navbar-text-color: #ffffff;
-}
-
 /* Default Light Mode Styles */
-body {
+body 
+{
     font-family: Arial, sans-serif;
-    background-color: var(--background-color);
-    color: var(--text-color);
+    background-color: #f4f4f4;
     margin: 0;
     padding: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 100vh;
 }
 
-.navbar {
+.navbar 
+{
     position: fixed;
     top: 0;
     width: 100%;
-    background-color: var(--navbar-background-color);
-    color: var(--navbar-text-color);
+    background-color: grey; /* Set background color to grey */
     padding: 10px 0;
     display: flex;
     justify-content: space-around;
     z-index: 1000;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.navbar a {
-    color: var(--navbar-text-color);
+.navbar a 
+{
+    color: #0000EE; /* Default link color */
     text-decoration: none;
     padding: 14px 20px;
     display: inline-block;
-    transition: background-color var(--transition-duration);
 }
 
-.navbar a:hover {
-    background-color: var(--hover-color);
-    border-radius: var(--border-radius);
+.navbar a:hover 
+{
+    color: #FF0000; /* Color when hovered */
+    text-decoration: underline;
+    background-color: #575757;
 }
 
-.content {
+.content 
+{
     margin-top: 60px;
     padding: 20px;
-    width: 100%;
-    max-width: 1200px;
-    box-sizing: border-box;
 }
 
-h2 {
-    color: var(--text-color);
+h2 
+{
+    color: #333;
     font-size: 24px;
     margin-bottom: 10px;
 }
 
-ul {
+ul 
+{
     list-style-type: none;
     padding: 0;
 }
 
-li {
-    background-color: var(--background-color);
+li 
+{
+    background-color: white;
     margin: 5px 0;
     padding: 10px;
-    border-radius: var(--border-radius);
+    border-radius: 5px;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-    transition: box-shadow var(--transition-duration);
-}
-
-li:hover {
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-}
-
-/* Toggle Button Styles */
-.toggle-button {
-    cursor: pointer;
-    color: var(--primary-color);
-    text-decoration: underline;
-    font-weight: bold;
-    transition: color var(--transition-duration);
-}
-
-.toggle-button:hover {
-    color: var(--hover-color);
 }
 
 /* Dark Mode Styles */
-.dark-mode {
-    background-color: var(--background-color);
-    color: var(--text-color);
+.dark-mode 
+{
+    background-color: #121212;
+    color: #e0e0e0;
 }
 
-.dark-mode .navbar {
-    background-color: var(--navbar-background-color);
+.dark-mode .navbar 
+{
+    background-color: #1f1f1f;
 }
 
-.dark-mode .navbar a {
-    color: var(--navbar-text-color);
+.dark-mode .navbar a 
+{
+    color: #e0e0e0;
 }
 
-.dark-mode .navbar a:hover {
-    background-color: var(--hover-color);
+.dark-mode .navbar a:hover 
+{
+    background-color: #333;
 }
 
-.dark-mode .content {
-    background-color: var(--background-color);
+.dark-mode .content 
+{
+    background-color: #121212;
 }
 
-.dark-mode h2 {
-    color: var(--text-color);
+.dark-mode h2 
+{
+    color: #e0e0e0;
 }
 
-.dark-mode li {
-    background-color: var(--background-color);
+.dark-mode li 
+{
+    background-color: #1f1f1f;
     box-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
 }
 
-.dark-mode .toggle-button {
-    color: #66b2ff;
+.toggle-button {
+    cursor: pointer;
+    color: #007bff;
+    text-decoration: underline;
+    text-align: center;
+    transition: background-color 0.3s ease, width 0.3s ease;
+    width: auto;
+    margin-bottom: 5px;
+    height: 50px;
 }
 
-.dark-mode .toggle-button:hover {
-    color: #3399ff;
+.toggle-button:hover {
+    background-color: #0056b3;
+    color: white;
 }

@@ -1,19 +1,11 @@
-function toggleGuestFields(userId, nextFreeUserId) {
-    console.log('toggleGuestFields called with userId:', userId, 'and nextFreeUserId:', nextFreeUserId); // Debugging statement
+function toggleGuestFields(userId) {
+    console.log('toggleGuestFields called with userId:', userId); // Debugging statement
     var guestFields = document.getElementById('guest-fields-' + userId);
-    var guestIdDisplay = document.getElementById('guest-id-display-' + userId);
-    var toggleButton = document.querySelector('.toggle-button[onclick="toggleGuestFields(\'' + userId + '\', \'' + nextFreeUserId + '\')"]');
 
-    if (guestFields.classList.contains('open')) {
-        guestFields.classList.remove('open');
+    if (guestFields.style.display === 'block') {
         guestFields.style.display = 'none'; // Hide the fields
-        toggleButton.style.width = '33.33%';
     } else {
-        hideAllGuestFields(); // Hide all other guest fields
-        guestFields.classList.add('open');
         guestFields.style.display = 'block'; // Show the fields
-        guestIdDisplay.textContent = 'Guest ID: ' + userId + ' | User ID: ' + nextFreeUserId;
-        toggleButton.style.width = '100%';
     }
 }
 
@@ -89,14 +81,6 @@ function confirmSaveSettings(form) {
     return confirm('Are you sure you want to save these settings?');
 }
 
-function confirmTransferGuest(userId) {
-    if (confirm('Are you sure you want to transfer this guest to the Users table?')) {
-        window.location.href = 'admin_view.php?transfer_guest_id=' + userId;
-    }
-}
-
 function confirmDeleteGuest(userId) {
-    if (confirm('Are you sure you want to delete this guest?')) {
-        window.location.href = 'delete_guest.php?user_id=' + userId;
-    }
+    return confirm('Are you sure you want to delete this guest?');
 }

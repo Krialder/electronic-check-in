@@ -62,33 +62,13 @@
             });
 
         // Load dark mode setting from localStorage
-        function loadDarkModeSetting() {
-            if (localStorage.getItem('darkMode') === 'enabled') 
-            {
-                document.body.classList.add('dark-mode');
-            } else {
-                document.body.classList.remove('dark-mode');
-            }
+        if (localStorage.getItem('darkMode') === 'enabled') 
+        {
+            document.body.classList.add('dark-mode');
         }
-
-        // Toggle dark mode
-        function toggleDarkMode() {
-            document.body.classList.toggle('dark-mode');
-            if (document.body.classList.contains('dark-mode')) {
-                localStorage.setItem('darkMode', 'enabled');
-            } else {
-                localStorage.setItem('darkMode', 'disabled');
-            }
-        }
-
-        // Add event listener for dark mode toggle
-        document.getElementById('dark-mode-toggle').addEventListener('click', () => {
-            toggleDarkMode();
-            loadDarkModeSetting();
-        });
-
-        // Initial load of dark mode setting
-        loadDarkModeSetting();
     </script>
+</body>
+
+</script>
 </body>
 </html>
