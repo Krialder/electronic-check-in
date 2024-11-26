@@ -1,8 +1,10 @@
-body 
-{
+@import url('common.css');
+@import url('lightmode.css');
+
+body {
     font-family: Arial, sans-serif;
-    background-color: #121212;
-    color: #e0e0e0;
+    background-color: var(--background-color-light);
+    color: var(--text-color-light);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -10,87 +12,179 @@ body
     margin: 0;
 }
 
-.login-container 
-{
-    background-color: #1f1f1f;
+.login-container {
+    background-color: var(--background-color-light);
+    color: var(--text-color-light);
     padding: 30px;
     border-radius: 10px;
-    box-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
     width: 350px;
     text-align: center;
+    margin: 0 auto;
 }
 
-.login-container h2 
-{
-    margin-bottom: 20px;
-    color: #e0e0e0;
+h1 {
+    text-align: center;
+    color: var(--text-color-light);
+    margin-bottom: 10px;
+    font-size: 2em;
 }
 
-.login-container label 
-{
-    display: block;
-    margin-bottom: 8px;
-    color: #e0e0e0;
-    text-align: left;
-}
-
-.login-container input[type="text"],
-.login-container input[type="password"] 
-{
+form {
+    max-width: 500px;
     width: 100%;
-    padding: 12px;
-    margin-bottom: 20px;
-    background-color: #333;
-    color: #e0e0e0;
-    border: 1px solid #444;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: var(--background-color-light);
     border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-width: 500px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: var(--background-color-light);
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     box-sizing: border-box;
 }
 
-.login-container input[type="submit"] 
-{
+.form-group {
+    margin-bottom: 10px;
+}
+
+label {
+    font-weight: bold;
+    margin-bottom: 3px;
+    display: block;
+    color: var(--text-color-light);
+    font-size: 1em;
+    text-align: left;
+}
+
+input[type="text"],
+input[type="password"] {
     width: 100%;
-    padding: 12px;
-    background-color: #444;
+    padding: 8px;
+    margin-top: 3px;
+    margin-bottom: 15px;
+    background-color: var(--background-color-light);
+    color: var(--text-color-light);
+    border: 1px solid var(--input-border-color-light);
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 1em;
+    text-align: left;
+}
+
+input[type="submit"],
+.return-button,
+.forgot-password-button {
+    width: 100%;
+    padding: 10px;
+    background-color: var(--primary-color);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    font-size: 1em;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
+    display: inline-block;
+    box-sizing: border-box;
+}
+
+input[type="submit"]:hover,
+.return-button:hover,
+.forgot-password-button:hover {
+    background-color: var(--primary-hover-color);
+}
+
+span {
+    color: red;
+    font-size: 0.9em;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.error {
+    color: red;
+    font-size: 0.9em;
+}
+
+a.return-button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: var(--button-background-color-light);
+    color: white;
+    text-align: center;
     border: none;
     border-radius: 5px;
-    color: white;
-    font-size: 16px;
     cursor: pointer;
+    text-decoration: none;
+    margin-top: 10px;
+    font-size: 1em;
     transition: background-color 0.3s ease;
 }
 
-.login-container input[type="submit"]:hover 
-{
-    background-color: #575757;
+a.return-button:hover {
+    background-color: var(--button-hover-background-color-light);
 }
 
-.login-container a 
-{
+.login-container a {
     display: block;
     margin-top: 15px;
-    color: #2575fc;
+    color: var(--link-color-light);
     text-decoration: none;
 }
 
-.login-container a:hover 
-{
+.login-container a:hover {
     text-decoration: underline;
 }
 
-.role-options {
-    display: flex;
-    align-items: center;
+p {
+    font-size: 0.9em;
+    color: #666;
+    margin-top: 10px;
+    margin-bottom: 5px;
 }
 
-.role-options label 
-{
-    display: inline-block;
-    margin-right: 10px;
-    font-size: smaller; 
+.form-group {
+    margin-bottom: 10px;
 }
 
-button[type="submit"] 
-{
-    font-size: 14px; /* Make smaller */
+input[type="password"],
+input[type="email"],
+input[type="text"] {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.right-align {
+    text-align: right;
+}
+
+.left-align {
+    text-align: left;
+}
+
+.white-background {
+    background-color: var(--background-color-light);
+    color: var(--text-color-light);
+}
+
+.black-text {
+    color: var(--text-color-light);
+}
+
+.adjusted-padding {
+    padding: 10px;
 }

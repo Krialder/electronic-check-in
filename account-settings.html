@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Account Settings</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dark-mode.css">
+    <link rel="stylesheet" href="common.css">
+    <link rel="stylesheet" href="admin_view.css"> <!-- Link to the new CSS file -->
+    <script src="account-settings.js" defer></script>
+    <script src="admin_view.js" defer></script> <!-- Link to the new JavaScript file -->
 </head>
 <body>
     <!-- Navigation bar with links to different sections of the dashboard -->
@@ -52,13 +57,18 @@
             <fieldset>
                 <legend>Theme Preferences</legend>
                 
-                <!-- Checkbox for dark mode toggle -->
-                <label for="theme-toggle">Dark Mode</label>
-                <input type="checkbox" id="theme-toggle" name="theme_toggle">
+                <!-- Radio buttons for theme toggle -->
+                <label>
+                    <input type="radio" name="theme" value="dark" id="dark-mode" checked>
+                    Dark Mode
+                </label>
+                <br>
+                <label>
+                    <input type="radio" name="theme" value="light" id="light-mode">
+                    Light Mode
+                </label>
             </fieldset>
-            
-            <!-- Button to save settings -->
-            <button type="submit">Save Settings</button>
+            <!-- Remove the Save Settings button -->
         </form>
         
         <!-- Placeholder for admin_view.php content -->
@@ -72,78 +82,75 @@
         }
     </style>
     <script>
-        // Load dark mode setting from localStorage
-        const themeToggle = document.getElementById('theme-toggle');
-        if (localStorage.getItem('darkMode') === 'enabled') 
-        {
-            document.body.classList.add('dark-mode');
-            themeToggle.checked = true;
-        }
+        document.addEventListener('DOMContentLoaded', () => {
+            const darkModeRadio = document.getElementById('dark-mode');
+            const lightModeRadio = document.getElementById('light-mode');
+            const body = document.body;
 
-        // Apply dark mode without saving it
-        themeToggle.addEventListener('change', () => 
-        {
-            if (themeToggle.checked) 
-            {
-                document.body.classList.add('dark-mode');
-            } 
-            else 
-            {
-                document.body.classList.remove('dark-mode');
-            }
-        });
-
-        // Save dark mode setting to localStorage on form submission
-        document.getElementById('settings-form').addEventListener('submit', (event) => 
-        {
-            event.preventDefault();
-            if (themeToggle.checked) 
-            {
-                localStorage.setItem('darkMode', 'enabled');
-            } 
-            else 
-            {
-                localStorage.setItem('darkMode', 'disabled');
-            }
-            alert('Settings saved!');
-        });
-        
-        // Fetch admin_view.php content and insert it into the div
-        fetch('admin_view.php')
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById('admin-view-content').innerHTML = data;
-                displayErrorMessage();
-            })
-            .catch(error => console.error('Error fetching admin_view.php:', error));
-
-        function toggleGuestFields(userId) {
-            var guestFields = document.getElementById('guest-fields-' + userId);
-            if (guestFields.style.display === 'none') {
-                guestFields.style.display = 'block';
+            // Load dark mode setting from localStorage
+            if (localStorage.getItem('darkMode') === 'enabled') {
+                body.classList.add('dark-mode');
+                darkModeRadio.checked = true;
             } else {
-                guestFields.style.display = 'none';
+                body.classList.remove('dark-mode');
+                lightModeRadio.checked = true;
             }
-        }
 
-        // Display error message if present in query parameters
-        function displayErrorMessage() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const errorMessage = urlParams.get('error');
-            const userId = urlParams.get('user_id');
-            if (errorMessage && userId) {
-                const errorDiv = document.createElement('div');
-                errorDiv.style.color = 'red';
-                errorDiv.textContent = decodeURIComponent(errorMessage);
-                const guestFields = document.getElementById('guest-fields-' + userId);
-                if (guestFields) {
-                    guestFields.insertBefore(errorDiv, guestFields.firstChild);
-                    guestFields.style.display = 'block';
+            // Apply dark mode and save it to localStorage
+            darkModeRadio.addEventListener('change', () => {
+                if (darkModeRadio.checked) {
+                    body.classList.add('dark-mode');
+                    body.classList.remove('light-mode');
+                    localStorage.setItem('darkMode', 'enabled');
                 }
-                // Clear the query parameters from the URL
-                window.history.replaceState({}, document.title, window.location.pathname);
+            });
+
+            // Apply light mode and save it to localStorage
+            lightModeRadio.addEventListener('change', () => {
+                if (lightModeRadio.checked) {
+                    body.classList.remove('dark-mode');
+                    body.classList.add('light-mode');
+                    localStorage.setItem('darkMode', 'disabled');
+                }
+            });
+
+            // Fetch admin_view.php content and insert it into the div
+            fetch('admin_view.php')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('admin-view-content').innerHTML = data;
+                    displayErrorMessage();
+                })
+                .catch(error => console.error('Error fetching admin_view.php:', error));
+
+            function toggleGuestFields(userId) {
+                var guestFields = document.getElementById('guest-fields-' + userId);
+                if (guestFields.style.display === 'none') {
+                    guestFields.style.display = 'block';
+                } else {
+                    guestFields.style.display = 'none';
+                }
             }
-        }
+
+            // Display error message if present in query parameters
+            function displayErrorMessage() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const errorMessage = urlParams.get('error');
+                const userId = urlParams.get('user_id');
+                if (errorMessage && userId) {
+                    const errorDiv = document.createElement('div');
+                    errorDiv.style.color = 'red';
+                    errorDiv.textContent = decodeURIComponent(errorMessage);
+                    const guestFields = document.getElementById('guest-fields-' + userId);
+                    if (guestFields) {
+                        guestFields.insertBefore(errorDiv, guestFields.firstChild);
+                        guestFields.style.display = 'block';
+                    }
+                    // Clear the query parameters from the URL
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }
+            }
+        });
     </script>
 </body>
 </html>

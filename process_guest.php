@@ -80,8 +80,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
             } 
             else 
             {
-                // Transfer guest to Users table
-                $conn->beginTransaction();
                 try 
                 {
                     // Fetch guest data from Guest table
@@ -117,16 +115,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
                     $stmt->bindParam(':user_id', $userId);
                     $stmt->execute();
 
-                    $conn->commit();
                     header('Location: /account-settings.html?success=1'); // Redirect to the HTML page with success message
                     exit();
                 } catch (Exception $e) 
                 {
-                    $conn->rollBack();
                     $error_msg = 'Error during operation: ' . $e->getMessage();
                 }
             }
         }
+    }
+
+    if (isset($_POST['delete_guest'])) {
+        // Handle delete guest action
+        $sql = 'DELETE FROM Guest WHERE user_id = :user_id';
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':user_id', $userId);
+        $stmt->execute();
+
+        header('Location: /account-settings.html?success=Guest deleted successfully');
+        exit();
     }
 
     // Redirect back to account-settings.html with error message and user ID
@@ -140,6 +147,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
 <head>
     <meta charset="UTF-8">
     <title>Process Guest</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Link to the CSS file -->
 </head>
 <body>
     <?php if (!empty($error_msg)) echo '<p>' . $error_msg . '</p>'; ?>
