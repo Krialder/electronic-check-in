@@ -1,11 +1,11 @@
 @import url('common.css');
-@import url('lightmode.css');
+@import url('dark-mode.css');
 
 /* Default Light Mode Styles */
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    color: #333;
+    background-color: var(--background-color-dark);
+    color: var(--text-color-dark);
     margin: 0;
     padding: 0;
     display: flex;
@@ -13,6 +13,65 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
+}
+
+/* Container styles */
+.container-outer {
+    background-color: var(--background-color-dark);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container-middle {
+    background-color: var(--background-color-light);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.container-inner {
+    background-color: var(--background-color-dark);
+    padding: 20px;
+    border-radius: 10px;
+    color: var(--text-color-dark);
+}
+
+.container-inner label {
+    color: var(--text-color-dark);
+}
+
+.container-inner p {
+    color: var(--text-color-dark);
+}
+
+.container-inner input[type="text"],
+.container-inner input[type="email"],
+.container-inner input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--input-background-color-dark);
+    color: var(--text-color-dark);
+}
+
+.container-inner input[type="submit"],
+.container-inner .return-button {
+    background-color: var(--button-background-color-dark);
+    color: var(--text-color-dark);
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 10px 0;
+}
+
+.container-inner input[type="submit"]:hover,
+.container-inner .return-button:hover {
+    background-color: var(--button-hover-background-color-dark);
 }
 
 .container {
@@ -37,7 +96,7 @@ form {
     width: 100%;
     margin: 0 auto;
     padding: 20px;
-    background-color: #ffffff; /* Revert to white */
+    background-color: #000000; /* Change to black */
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     color: #000000; /* Change to black */
@@ -168,4 +227,18 @@ input[type="email"],
 input[type="text"] {
     width: 100%;
     box-sizing: border-box;
+}
+
+.container-inner input[type="submit"] {
+    background-color: blue; /* Change background color to blue */
+    color: var(--text-color-dark);
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 10px 0;
+}
+
+.container-inner input[type="submit"]:hover {
+    background-color: darkblue; /* Change hover background color to dark blue */
 }

@@ -15,9 +15,9 @@ body {
 .login-container {
     background-color: var(--background-color-light);
     color: var(--text-color-light);
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     width: 350px;
     text-align: center;
     margin: 0 auto;
@@ -187,4 +187,30 @@ input[type="text"] {
 
 .adjusted-padding {
     padding: 10px;
+}
+
+.login-button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.login-button:hover {
+    background-color: var(--primary-hover-color);
+}
+
+.register-link, .forgot-password-link {
+    display: inline-block;
+    margin-top: 10px;
+    color: var(--link-color-light);
+    text-decoration: none;
+}
+
+.register-link:hover, .forgot-password-link:hover {
+    color: var(--link-hover-color);
+    text-decoration: underline;
 }

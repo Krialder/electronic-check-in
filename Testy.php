@@ -44,7 +44,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
     {
         $password = trim($_POST['password']);
     }
-    
+
     if(empty($name_err) && empty($password_err))
     {
         $sql = 'SELECT user_id, name, password, email, role FROM Users WHERE name = :name';
@@ -86,3 +86,26 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
 }
 $conn = null;
 ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- ...existing code... -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dark-mode.css">
+    <link rel="stylesheet" href="lightmode.css">
+    <link rel="stylesheet" href="common.css"> <!-- New stylesheet link -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const body = document.body;
+            if (localStorage.getItem('darkMode') === 'enabled') {
+                body.classList.add('dark-mode');
+            } else {
+                body.classList.remove('dark-mode');
+            }
+        });
+    </script>
+</head>
+<body>
+    <!-- ...existing code... -->
+</body>
+</html>

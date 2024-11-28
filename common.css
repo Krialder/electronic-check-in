@@ -69,14 +69,23 @@ body.dark-mode {
     color: var(--primary-color);
     text-decoration: underline;
     text-align: center;
-    transition: none;
+    transition: background-color 0.3s ease, width 0.3s ease;
     width: auto;
     margin-bottom: 5px;
     height: 50px;
 }
 
 .toggle-button:hover {
-    color: var(--primary-color);
+    background-color: var(--primary-hover-color);
+    color: white;
+}
+
+body.dark-mode .toggle-button {
+    color: #66b2ff;
+}
+
+body.dark-mode .toggle-button:hover {
+    color: #3399ff;
 }
 
 .role-options {
@@ -400,10 +409,28 @@ button[type="submit"]:hover {
     background-color: var(--link-hover-background-color);
 }
 
+body.dark-mode .navbar {
+    background-color: var(--navbar-background-color-dark);
+}
+
+body.dark-mode .navbar a {
+    color: var(--link-color-dark);
+}
+
+body.dark-mode .navbar a:hover {
+    background-color: var(--link-hover-background-color-dark);
+    color: var(--link-hover-color-dark);
+}
+
 /* Content styles */
 .content {
     margin-top: 60px;
     padding: 20px;
+    background-color: var(--background-color-light);
+}
+
+body.dark-mode .content {
+    background-color: var(--background-color-dark);
 }
 
 /* Heading styles */
@@ -411,6 +438,10 @@ h2 {
     color: var(--text-color-light);
     font-size: 24px;
     margin-bottom: 10px;
+}
+
+body.dark-mode h2 {
+    color: var(--text-color-dark);
 }
 
 /* List styles */
@@ -425,6 +456,11 @@ li {
     padding: 10px;
     border-radius: 5px;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+body.dark-mode li {
+    background-color: var(--input-background-color-dark);
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
 }
 
 /* Button styles */
@@ -455,4 +491,19 @@ input[type="email"],
 input[type="text"] {
     width: 100%;
     box-sizing: border-box;
+}
+
+/* Admin view styles */
+.admin-view {
+    background-color: var(--background-color-light);
+    color: var(--text-color-light);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+body.dark-mode .admin-view {
+    background-color: var(--background-color-dark);
+    color: var(--text-color-dark);
 }

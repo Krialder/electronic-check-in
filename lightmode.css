@@ -1,20 +1,45 @@
+body {
+    background-color: var(--background-color-light);
+    color: var(--text-color-light);
+}
 
 body.light-mode {
     background-color: var(--background-color-light);
     color: var(--text-color-light);
 }
 
-.navbar.light-mode {
+body.light-mode .navbar {
     background-color: var(--navbar-background-color-light);
 }
 
-.navbar a.light-mode {
+body.light-mode .navbar a {
     color: var(--link-color-light);
 }
 
-.navbar a.light-mode:hover {
-    background-color: var(--link-hover-background-color-light);
-    color: var(--link-hover-color-light);
+body.light-mode .navbar a:hover {
+    background-color: var(--link-hover-background-color);
+    color: var(--link-hover-color);
+}
+
+body.light-mode .content {
+    background-color: var(--background-color-light);
+}
+
+body.light-mode h2 {
+    color: var(--text-color-light);
+}
+
+body.light-mode li {
+    background-color: var(--input-background-color-light);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .toggle-button {
+    color: var(--primary-color);
+}
+
+body.light-mode .toggle-button:hover {
+    color: var(--primary-hover-color);
 }
 
 /* ...existing code... */

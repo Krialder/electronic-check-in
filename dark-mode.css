@@ -30,7 +30,7 @@ body.dark-mode h2 {
 }
 
 body.dark-mode li {
-    background-color: #1f1f1f;
+    background-color: var(--input-background-color-dark);
     box-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
 }
 
@@ -40,17 +40,4 @@ body.dark-mode .toggle-button {
 
 body.dark-mode .toggle-button:hover {
     color: #3399ff;
-}
-
-.navbar.dark-mode {
-    background-color: var(--navbar-background-color-dark);
-}
-
-.navbar a.dark-mode {
-    color: var(--link-color-dark);
-}
-
-.navbar a.dark-mode:hover {
-    background-color: var(--link-hover-background-color-dark);
-    color: var(--link-hover-color-dark);
 }

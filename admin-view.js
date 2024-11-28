@@ -1,22 +1,5 @@
+
 document.addEventListener('DOMContentLoaded', () => {
-    const body = document.body;
-
-    // Load dark mode setting from localStorage
-    if (localStorage.getItem('darkMode') === 'enabled') {
-        body.classList.add('dark-mode');
-    } else {
-        body.classList.remove('dark-mode');
-    }
-
-    // Fetch admin_view.php content and insert it into the div
-    fetch('admin_view.php')
-        .then(response => response.text())
-        .then(data => {
-            document.getElementById('admin-view-content').innerHTML = data;
-            displayErrorMessage();
-        })
-        .catch(error => console.error('Error fetching admin_view.php:', error));
-
     function toggleGuestFields(userId) {
         var guestFields = document.getElementById('guest-fields-' + userId);
         if (guestFields.style.display === 'none') {
@@ -44,4 +27,13 @@ document.addEventListener('DOMContentLoaded', () => {
             window.history.replaceState({}, document.title, window.location.pathname);
         }
     }
+
+    // Fetch admin_view.php content and insert it into the div
+    fetch('admin_view.php')
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('admin-view-content').innerHTML = data;
+            displayErrorMessage();
+        })
+        .catch(error => console.error('Error fetching admin_view.php:', error));
 });

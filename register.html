@@ -4,111 +4,138 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrierung</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dark-mode.css">
+    <link rel="stylesheet" href="lightmode.css">
+    <link rel="stylesheet" href="common.css">
     <link rel="stylesheet" href="register.css">
-    <link rel="stylesheet" href="common.css"> <!-- Add common.css for additional styling -->
     <script src="register.js" defer></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const darkModeRadio = document.getElementById('dark-mode');
-            const lightModeRadio = document.getElementById('light-mode');
             const body = document.body;
 
             // Load dark mode setting from localStorage
             if (localStorage.getItem('darkMode') === 'enabled') {
                 body.classList.add('dark-mode');
-                darkModeRadio.checked = true;
             } else {
                 body.classList.remove('dark-mode');
-                lightModeRadio.checked = true;
             }
-
-            // Apply dark mode and save it to localStorage
-            darkModeRadio.addEventListener('change', () => {
-                if (darkModeRadio.checked) {
-                    body.classList.add('dark-mode');
-                    body.classList.remove('light-mode');
-                    localStorage.setItem('darkMode', 'enabled');
-                }
-            });
-
-            // Apply light mode and save it to localStorage
-            lightModeRadio.addEventListener('change', () => {
-                if (lightModeRadio.checked) {
-                    body.classList.remove('dark-mode');
-                    body.classList.add('light-mode');
-                    localStorage.setItem('darkMode', 'disabled');
-                }
-            });
         });
     </script>
+    <style>
+        .container-outer {
+            background-color: var(--background-color-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container-middle {
+            background-color: var(--background-color-light);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .container-inner {
+            background-color: var(--background-color-dark);
+            padding: 20px;
+            border-radius: 10px;
+            color: var(--text-color-dark);
+        }
+
+        .container-inner label {
+            color: var(--text-color-dark);
+        }
+
+        .container-inner p {
+            color: var(--text-color-dark);
+        }
+
+        .container-inner input[type="text"],
+        .container-inner input[type="email"],
+        .container-inner input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            background-color: var(--input-background-color-dark);
+            color: var(--text-color-dark);
+        }
+
+        .container-inner input[type="submit"],
+        .container-inner .return-button {
+            background-color: var(--button-background-color-dark);
+            color: var(--text-color-dark);
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+
+        .container-inner input[type="submit"]:hover,
+        .container-inner .return-button:hover {
+            background-color: var(--button-hover-background-color-dark);
+        }
+    </style>
 </head>
-<body class="dark-background">
-    <div class="container">
-        <h1>Registrierung</h1>
-        
-        <form action="register.php" method="post" onsubmit="return validatePassword()" class="form-container">
-            <!-- Forname field -->
-            <div class="form-group">
-                <label for="forname">*Vorname:</label>
-                <input type="text" id="forname" name="forname" required oninput="updateUsername()" pattern="[A-Za-z]+" title="Der Vorname darf nur Buchstaben enthalten">
-                <span class="error"><?php echo $forname_err; ?></span>
-            </div>
+<body>
+    <div class="container-outer">
+        <div class="container-middle">
+            <h1 style="color: var(--text-color-light);">Registrierung</h1>
+            <div class="container-inner">
+                <form action="register.php" method="post" onsubmit="return validatePassword()" class="form-container">
+                    <!-- Forname field -->
+                    <div class="form-group">
+                        <label for="forname">*Vorname:</label>
+                        <input type="text" id="forname" name="forname" required>
+                    </div>
 
-            <!-- Surname field -->
-            <div class="form-group">
-                <label for="surname">*Nachname:</label>
-                <input type="text" id="surname" name="surname" required oninput="updateUsername()" pattern="[A-Za-z]+" title="Der Nachname darf nur Buchstaben enthalten">
-                <span class="error"><?php echo $surname_err; ?></span>
-            </div>
+                    <!-- Surname field -->
+                    <div class="form-group">
+                        <label for="surname">*Nachname:</label>
+                        <input type="text" id="surname" name="surname" required>
+                    </div>
 
-            <!-- Username field -->
-            <div class="form-group">
-                <label for="name">Benutzername:</label>
-                <input type="text" id="name" name="name" readonly>
-                <span class="error"><?php echo $name_err; ?></span>
-            </div>
+                    <!-- Username field -->
+                    <div class="form-group">
+                        <label for="name">Benutzername:</label>
+                        <input type="text" id="name" name="name" readonly>
+                    </div>
 
-            <!-- Email field -->
-            <div class="form-group">
-                <label for="email">E-Mail:</label>
-                <input type="email" id="email" name="email">
-            </div>
+                    <!-- Email field -->
+                    <div class="form-group">
+                        <label for="email">E-Mail:</label>
+                        <input type="email" id="email" name="email">
+                    </div>
 
-            <!-- Password field -->
-            <div class="form-group">
-                <label for="password">**Passwort:</label>
-                <input type="password" id="password" name="password">
-                <span class="error"><?php echo $password_err; ?></span>
-            </div>
+                    <!-- Password field -->
+                    <div class="form-group">
+                        <label for="password">**Passwort:</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
 
-            <!-- Confirm Password field -->
-            <div class="form-group">
-                <label for="password2">**Passwort wiederholen:</label>    
-                <input type="password" id="password2" name="password2">
-            </div>
+                    <!-- Confirm Password field -->
+                    <div class="form-group">
+                        <label for="password2">**Passwort wiederholen:</label>    
+                        <input type="password" id="password2" name="password2" required>
+                    </div>
 
-            <!-- Required fields note -->
-            <p>* Pflichtfeld</p>
-            <p>** Passwort muss mindestens 9 Zeichen, einen Kleinbuchstaben, einen Großbuchstaben, eine Zahl und ein Sonderzeichen enthalten.</p>
+                    <!-- Submit button -->
+                    <div class="form-group">
+                        <input type="submit" value="absenden">
+                        <a href="testy.html" class="return-button">Zurück</a>
+                    </div>
 
-            <!-- Submit button -->
-            <div class="form-group">
-                <input type="submit" name="register" value="Absenden">
-                <a href="http://localhost/Testy.html" class="return-button">Zurück</a>
+                    <!-- Required fields note -->
+                    <p>* Pflichtfeld</p>
+                    <p>** Passwort muss mindestens 9 Zeichen, einen Kleinbuchstaben, einen Großbuchstaben, eine Zahl und ein Sonderzeichen enthalten.</p>
+                </form>
             </div>
-        </form>
-        <fieldset>
-            <legend>Theme Preferences</legend>
-            <label>
-                <input type="radio" name="theme" value="dark" id="dark-mode" checked>
-                Dark Mode
-            </label>
-            <br>
-            <label>
-                <input type="radio" name="theme" value="light" id="light-mode">
-                Light Mode
-            </label>
-        </fieldset>
+        </div>
     </div>
 </body>
 </html>

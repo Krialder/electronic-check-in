@@ -6,10 +6,59 @@
     <title>Account Settings</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="dark-mode.css">
+    <link rel="stylesheet" href="lightmode.css">
     <link rel="stylesheet" href="common.css">
-    <link rel="stylesheet" href="admin_view.css"> <!-- Link to the new CSS file -->
     <script src="account-settings.js" defer></script>
-    <script src="admin_view.js" defer></script> <!-- Link to the new JavaScript file -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const body = document.body;
+            if (localStorage.getItem('darkMode') === 'enabled') {
+                body.classList.add('dark-mode');
+            } else {
+                body.classList.remove('dark-mode');
+            }
+
+            // Fetch admin_view.php content and insert it into the div
+            fetch('admin_view.php')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('admin-view-content').innerHTML = data;
+                    displayErrorMessage();
+                })
+                .catch(error => console.error('Error fetching admin_view.php:', error));
+
+            // Display error message if present in query parameters
+            function displayErrorMessage() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const errorMessage = urlParams.get('error');
+                const userId = urlParams.get('user_id');
+                if (errorMessage && userId) {
+                    const errorDiv = document.createElement('div');
+                    errorDiv.style.color = 'red';
+                    errorDiv.textContent = decodeURIComponent(errorMessage);
+                    const guestFields = document.getElementById('guest-fields-' + userId);
+                    if (guestFields) {
+                        guestFields.insertBefore(errorDiv, guestFields.firstChild);
+                        guestFields.style.display = 'block';
+                    }
+                    // Clear the query parameters from the URL
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }
+            }
+
+            // Ensure toggleGuestFields is only accessible for admins
+            if (document.body.classList.contains('admin')) {
+                window.toggleGuestFields = function(userId) {
+                    var guestFields = document.getElementById('guest-fields-' + userId);
+                    if (guestFields.style.display === 'none') {
+                        guestFields.style.display = 'block';
+                    } else {
+                        guestFields.style.display = 'none';
+                    }
+                }
+            }
+        });
+    </script>
 </head>
 <body>
     <!-- Navigation bar with links to different sections of the dashboard -->
@@ -52,105 +101,20 @@
                     SMS Notifications
                 </label>
             </fieldset>
-            
-            <!-- Fieldset for theme preferences -->
-            <fieldset>
-                <legend>Theme Preferences</legend>
-                
-                <!-- Radio buttons for theme toggle -->
-                <label>
-                    <input type="radio" name="theme" value="dark" id="dark-mode" checked>
-                    Dark Mode
-                </label>
-                <br>
-                <label>
-                    <input type="radio" name="theme" value="light" id="light-mode">
-                    Light Mode
-                </label>
-            </fieldset>
-            <!-- Remove the Save Settings button -->
         </form>
         
         <!-- Placeholder for admin_view.php content -->
         <div id="admin-view-content">
-            <h2>Admin View</h2> <!-- Add header -->
+            <h2>Admin View</h2>
+            <div class="guest-header-group">
+                <div class="guest-container" data-user-id="32">
+                    <div class="guest-id" data-user-id="32" onclick="toggleGuestFields(32)">Guest ID: 32</div>
+                    <div id="guest-fields-32" class="guest-fields" style="display: none;">
+                        <!-- Guest fields content -->
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    <style>
-        button[type="submit"] {
-            font-size: 14px; /* Make smaller */
-        }
-    </style>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const darkModeRadio = document.getElementById('dark-mode');
-            const lightModeRadio = document.getElementById('light-mode');
-            const body = document.body;
-
-            // Load dark mode setting from localStorage
-            if (localStorage.getItem('darkMode') === 'enabled') {
-                body.classList.add('dark-mode');
-                darkModeRadio.checked = true;
-            } else {
-                body.classList.remove('dark-mode');
-                lightModeRadio.checked = true;
-            }
-
-            // Apply dark mode and save it to localStorage
-            darkModeRadio.addEventListener('change', () => {
-                if (darkModeRadio.checked) {
-                    body.classList.add('dark-mode');
-                    body.classList.remove('light-mode');
-                    localStorage.setItem('darkMode', 'enabled');
-                }
-            });
-
-            // Apply light mode and save it to localStorage
-            lightModeRadio.addEventListener('change', () => {
-                if (lightModeRadio.checked) {
-                    body.classList.remove('dark-mode');
-                    body.classList.add('light-mode');
-                    localStorage.setItem('darkMode', 'disabled');
-                }
-            });
-
-            // Fetch admin_view.php content and insert it into the div
-            fetch('admin_view.php')
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById('admin-view-content').innerHTML = data;
-                    displayErrorMessage();
-                })
-                .catch(error => console.error('Error fetching admin_view.php:', error));
-
-            function toggleGuestFields(userId) {
-                var guestFields = document.getElementById('guest-fields-' + userId);
-                if (guestFields.style.display === 'none') {
-                    guestFields.style.display = 'block';
-                } else {
-                    guestFields.style.display = 'none';
-                }
-            }
-
-            // Display error message if present in query parameters
-            function displayErrorMessage() {
-                const urlParams = new URLSearchParams(window.location.search);
-                const errorMessage = urlParams.get('error');
-                const userId = urlParams.get('user_id');
-                if (errorMessage && userId) {
-                    const errorDiv = document.createElement('div');
-                    errorDiv.style.color = 'red';
-                    errorDiv.textContent = decodeURIComponent(errorMessage);
-                    const guestFields = document.getElementById('guest-fields-' + userId);
-                    if (guestFields) {
-                        guestFields.insertBefore(errorDiv, guestFields.firstChild);
-                        guestFields.style.display = 'block';
-                    }
-                    // Clear the query parameters from the URL
-                    window.history.replaceState({}, document.title, window.location.pathname);
-                }
-            }
-        });
-    </script>
 </body>
 </html>

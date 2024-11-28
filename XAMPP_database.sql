@@ -73,10 +73,7 @@ CREATE TABLE IF NOT EXISTS AccessLogs
     rfid_tag VARCHAR(255),
     device_id INT,
     access_time DATETIME DEFAULT CURRENT_TIMESTAMP,
-    status VARCHAR(50) CHECK (status IN ('granted', 'denied')),
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES Users(user_id),
+    status VARCHAR(50) CHECK (status IN ('granted', 'denied')),  -- New column added
     FOREIGN KEY (device_id) REFERENCES RFIDDevices(device_id),
     INDEX (user_id),
     INDEX (rfid_tag),
