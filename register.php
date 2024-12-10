@@ -37,12 +37,15 @@ if (isset($_POST['register']))
     $stmt->execute([$name]);
     $user_count = $stmt->fetchColumn();
 
-    if ($guest_count > 0 || $user_count > 0) {
+    if ($guest_count > 0 || $user_count > 0) 
+    {
         $name_err = 'Der Benutzername ist nicht verfügbar';
         // Display the error message and stop execution
         echo "<script>alert('$name_err'); window.location.href='register.html';</script>";
         exit;
-    } else {
+    } 
+    else 
+    {
         // Check if passwords match
         if ($password !== $password2)
         {
@@ -88,8 +91,10 @@ if (isset($_POST['register']))
             $existing_ids = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
 
             $new_user_id = 1;
-            foreach ($existing_ids as $id) {
-                if ($id != $new_user_id) {
+            foreach ($existing_ids as $id) 
+            {
+                if ($id != $new_user_id) 
+                {
                     break;
                 }
                 $new_user_id++;

@@ -42,7 +42,7 @@ RFIDManager rfidManager;
 
 void setup() 
 {
-    Serial.begin(9600); // Initialize Serial communication with NodeMCU
+    Serial.begin(9600); // Ensure this matches NodeMCU_Code.ino
     Serial.println("Setup started"); // Debugging statement
     rfidManager.begin();
     Serial.println("Setup completed"); // Debugging statement

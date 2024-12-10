@@ -7,7 +7,7 @@ let countdownInterval;
 let timeLeft;
 
 // Function to start RFID scan for a specific user
-function startRFIDScan(userId) 
+function startRFIDScan(userId, jsonOnly = false) 
 {
     // Debug log
     console.log('startRFIDScan called for user ID:', userId);
@@ -47,12 +47,6 @@ function startRFIDScan(userId)
             timerDisplay.textContent = 'Time left: ' + timeLeft + ' seconds';
             console.log('Time left:', timeLeft); // Debug log
 
-            // Show a pop-up message every 15 seconds
-            if (timeLeft % 15 === 0) 
-            {
-                alert('Time left: ' + timeLeft + ' seconds');
-            }
-
             timeLeft--;
         }
     }, 1000);
@@ -83,6 +77,32 @@ function startRFIDScan(userId)
     // Add event listener for RFID scan
     document.addEventListener('keydown', onRFIDScan);
 
+    // Simulate RFID scanning process
+    fetch('/start_scan.php')
+        .then(response => response.json())
+        .then(result => 
+            {
+            console.log('Server Response:', result); // Debugging statement
+            if (result.status === 'success') 
+                {
+                rfidInput.value = result.rfid_tag;
+                alert("RFID scanned and assigned to user.");
+                document.removeEventListener('keydown', onRFIDScan);
+                clearInterval(countdownInterval);
+                timerDisplay.textContent = "RFID scan completed.";
+            } 
+            else 
+            {
+                timerDisplay.textContent = result.message;
+            }
+        })
+        .catch(error => 
+        {
+            console.error('Error during RFID scan:', error);
+            alert("RFID scan failed.");
+            timerDisplay.textContent = "RFID scan failed.";
+        });
+
     // Timeout after 1 minute if no RFID is scanned
     rfidTimeout = setTimeout(() => 
     {
@@ -92,4 +112,16 @@ function startRFIDScan(userId)
         clearInterval(countdownInterval);
         timerDisplay.textContent = "RFID scan timed out.";
     }, 60000);
+
+    if (jsonOnly) 
+    {
+        // Hide all elements except JSON-only elements
+        document.body.classList.add('json-only');
+    }
+}
+
+// Function to end JSON-only mode
+function endJsonOnlyMode() 
+{
+    document.body.classList.remove('json-only');
 }

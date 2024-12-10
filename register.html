@@ -7,38 +7,39 @@
     <link rel="stylesheet" href="register.css">
 </head>
 <body>
-    <h1>Registration</h1>
-    
-    <form action="register.php" method="post" onsubmit="return validatePassword()">
-        <label for="forname">*Vorname:</label>
-        <input type="text" id="forname" name="forname" required oninput="updateUsername()" pattern="[A-Za-z]+" title="Der Vorname darf nur Buchstaben enthalten">
-        <span><?php echo $forname_err; ?></span>
+    <div class="container">
+        <h1>Registration</h1>
+        
+        <form action="register.php" method="post" onsubmit="return validatePassword()">
+            <label for="forname">*Vorname:</label>
+            <input type="text" id="forname" name="forname" required oninput="updateUsername()" pattern="[A-Za-z]+" title="Der Vorname darf nur Buchstaben enthalten">
+            <span><?php echo $forname_err; ?></span>
 
-        <label for="surname">*Nachname:</label>
-        <input type="text" id="surname" name="surname" required oninput="updateUsername()" pattern="[A-Za-z]+" title="Der Nachname darf nur Buchstaben enthalten">
-        <span><?php echo $surname_err; ?></span>
+            <label for="surname">*Nachname:</label>
+            <input type="text" id="surname" name="surname" required oninput="updateUsername()" pattern="[A-Za-z]+" title="Der Nachname darf nur Buchstaben enthalten">
+            <span><?php echo $surname_err; ?></span>
 
-        <label for="name">Benutzername:</label>
-        <input type="text" id="name" name="name" readonly>
-        <span><?php echo $name_err; ?></span>
+            <label for="name">Benutzername:</label>
+            <input type="text" id="name" name="name" readonly>
+            <span><?php echo $name_err; ?></span>
 
-        <label for="email">E-mail:</label>
-        <input type="email" id="email" name="email">
+            <label for="email">E-mail:</label>
+            <input type="email" id="email" name="email">
 
-        <label for="password">**Password:</label>
-        <input type="password" id="password" name="password" required>
-        <span><?php echo $password_err; ?></span>
+            <label for="password">**Password:</label>
+            <input type="password" id="password" name="password" required>
+            <span><?php echo $password_err; ?></span>
 
-        <label for="password2">**Password wiederholen:</label>    
-        <input type="password" id="password2" name="password2" required>
+            <label for="password2">**Password wiederholen:</label>    
+            <input type="password" id="password2" name="password2" required>
 
-        <p>* Pflichtfeld</p>
-        <p>** Password must contain at least 9 characters, one lowercase letter, one uppercase letter, one number, and one special character.</p>
+            <p>* Pflichtfeld</p>
+            <p>** Password must contain at least 9 characters, one lowercase letter, one uppercase letter, one number, and one special character.</p>
 
-        <input type="submit" name="register" value="Submit">
-        <a href="http://localhost/Testy.html" class="return-button">Zurück</a>
-    </form>
-
+            <input type="submit" name="register" value="Submit">
+            <a href="http://localhost/Testy.html" class="return-button">Zurück</a>
+        </form>
+    </div>
     <script>
         // function to update the username field based on the forname and surname fields
         function updateUsername()

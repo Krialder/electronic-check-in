@@ -118,6 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
                     $stmt->execute();
 
                     $conn->commit();
+                    reassignGuestIds($conn); // Reassign Guest IDs
                     header('Location: /account-settings.html?success=1'); // Redirect to the HTML page with success message
                     exit();
                 } catch (Exception $e) 
@@ -132,6 +133,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
     // Redirect back to account-settings.html with error message and user ID
     header('Location: /account-settings.html?error=' . urlencode($error_msg) . '&user_id=' . urlencode($userId));
     exit();
+}
+
+// Function to reassign Guest IDs sequentially
+function reassignGuestIds($conn) 
+{
+    $stmt = $conn->query('SELECT user_id FROM Guest ORDER BY user_id');
+    $guestIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
+    $newId = 1;
+    foreach ($guestIds as $id) 
+    {
+        if ($id != $newId) 
+        {
+            $updateStmt = $conn->prepare('UPDATE Guest SET user_id = :new_id WHERE user_id = :old_id');
+            $updateStmt->bindParam(':new_id', $newId);
+            $updateStmt->bindParam(':old_id', $id);
+            $updateStmt->execute();
+        }
+        $newId++;
+    }
 }
 ?>
 

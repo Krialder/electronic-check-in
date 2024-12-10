@@ -105,8 +105,8 @@ CREATE TABLE IF NOT EXISTS Reports
 -- Insert example data into Users table
 INSERT INTO Users (name, email, phone, rfid_tag, role, password)
 VALUES 
-('John Doe', 'john.doe@example.com', '1234567890', 'RFID123456', 'admin', PASSWORD('password123')),
-('Jane Smith', 'jane.smith@example.com', '0987654321', 'RFID654321', 'user', PASSWORD('password456'));
+('test', 'john.doe@example.com', '1234567890', 'RFID123456', 'admin', '1'),
+('Jane Smith', 'jane.smith@example.com', '0987654321', 'RFID654321', 'user', 'password456');
 
 -- Insert example data into Events table
 INSERT INTO Events (event_name, location, start_time, end_time)

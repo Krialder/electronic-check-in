@@ -8,11 +8,12 @@
 const char* ssid = "Luftuberwachungssystem";
 const char* password = "Ux957Zi%xqbY6vPHCm#4X";
 
-// Server URL
-const char* serverName = "http://192.168.2.150/kde_test2_endpoint"; // Update to match the specific database endpoint
+// Server URLs
+const char* startScanUrl = "http://localhost/start_scan.php";
+const char* logAccessUrl = "http://localhost/RFID_Database.php";
 
 // Baud rate for serial communication with Mega 2560
-#define BAUD_RATE 9600
+#define BAUD_RATE 9600 // Ensure this matches RFIDReader.ino
 
 // NTP Client to get time
 WiFiUDP ntpUDP;
@@ -25,6 +26,9 @@ void setup()
 {
     Serial.begin(BAUD_RATE); // Initialize Serial for communication with Mega 2560
     WiFi.begin(ssid, password); // Connect to Wi-Fi
+
+    Serial.println("Setup completed"); // Debugging statement
+    Serial.println("Connecting to Wi-Fi..."); // Debugging statement
 
     // Wait for the Wi-Fi to connect
     int attempts = 0;
@@ -57,6 +61,7 @@ void setup()
     timeClient.begin();
     server.on("/start_scan", HTTP_GET, handleStartScan);
     server.begin();
+    Serial.println("Server started"); // Debugging statement
 }
 
 void loop() 
@@ -68,6 +73,7 @@ void loop()
     // Auto-logout at 16:00 CET
     if (currentHour == 16 && currentMinute == 0) 
     {
+        Serial.println("Auto-logout triggered"); // Debugging statement
         autoLogout();
         delay(60000); // Wait for a minute to avoid multiple logout requests
     }
@@ -80,35 +86,41 @@ void loop()
 
         if (rfidTag.length() > 0) 
         {
-            // Send RFID data to the server
-            if (WiFi.status() == WL_CONNECTED) 
-            {
-                HTTPClient http;
-                http.begin(wifiClient, serverName); // Use the specific database endpoint
-                http.addHeader("Content-Type", "application/x-www-form-urlencoded");
-
-                String httpRequestData = "rfid=" + rfidTag;
-                int httpResponseCode = http.POST(httpRequestData);
-
-                if (httpResponseCode > 0) 
-                {
-                    String response = http.getString();
-                    Serial.println("Server Response: " + response);
-                } 
-                else 
-                {
-                    Serial.println("Error sending POST request");
-                }
-                // Close the connection
-                http.end(); 
-            } 
-            else 
-            {
-                Serial.println("Wi-Fi not connected");
-            }
+            Serial.println("RFID Tag received: " + rfidTag); // Debugging statement
+            // Log the access in the database
+            logAccess(rfidTag);
         }
     }
     server.handleClient();
+}
+
+void logAccess(String rfidTag) 
+{
+    if (WiFi.status() == WL_CONNECTED) 
+    {
+        HTTPClient http;
+        http.begin(wifiClient, logAccessUrl); // Use the specific database endpoint
+        http.addHeader("Content-Type", "application/x-www-form-urlencoded");
+
+        String httpRequestData = "rfid=" + rfidTag;
+        int httpResponseCode = http.POST(httpRequestData);
+
+        if (httpResponseCode > 0) 
+        {
+            String response = http.getString();
+            Serial.println("Log Access Response: " + response);
+        } 
+        else 
+        {
+            Serial.println("Error sending POST request to RFID_Database.php");
+        }
+
+        http.end(); // Close the connection
+    } 
+    else 
+    {
+        Serial.println("Wi-Fi not connected for logging access");
+    }
 }
 
 void autoLogout() 
@@ -116,7 +128,7 @@ void autoLogout()
     if (WiFi.status() == WL_CONNECTED) 
     {
         HTTPClient http;
-        http.begin(wifiClient, serverName); // Use the specific database endpoint
+        http.begin(wifiClient, logAccessUrl); // Use the specific database endpoint
         http.addHeader("Content-Type", "application/x-www-form-urlencoded");
 
         String httpRequestData = "auto_logout=true";
