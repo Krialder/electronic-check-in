@@ -27,27 +27,23 @@ if (isset($_POST['register']))
     $password = $_POST['password'];
     $password2 = $_POST['password2'];
 
-    // Validate passwords||Passwords do not match
+    // Validate form data
     if ($password !== $password2)
     {  
         $password_err = 'Passwörter stimmen nicht überein'; 
     }
-     // Password is empty
     else if (empty($password))
     {
         $password_err = 'Bitte geben Sie ein Passwort ein'; 
     }
-    // Email is empty
     else if (empty($email))
     {
         $email_err = 'Bitte geben Sie eine E-Mail-Adresse ein'; 
     }
-    // Forename is empty
     else if (empty($forname))
     {
         $forname_err = 'Bitte geben Sie einen Vornamen an'; 
     }
-    // Surname is empty
     else if (empty($surname))
     {
         $surname_err = 'Bitte geben Sie einen Nachnamen an'; 

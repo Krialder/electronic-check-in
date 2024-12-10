@@ -13,7 +13,7 @@ const char* startScanUrl = "http://localhost/start_scan.php";
 const char* logAccessUrl = "http://localhost/RFID_Database.php";
 
 // Baud rate for serial communication with Mega 2560
-#define BAUD_RATE 9600 // Ensure this matches RFIDReader.ino
+#define BAUD_RATE 9600 
 
 // NTP Client to get time
 WiFiUDP ntpUDP;
@@ -22,13 +22,14 @@ NTPClient timeClient(ntpUDP, "pool.ntp.org", 3600 * 1); // CET is UTC+1
 WiFiClient wifiClient;
 ESP8266WebServer server(80);
 
+// This function initializes the serial communication, connects to Wi-Fi, initializes the NTP client, and starts the web server.
 void setup() 
 {
-    Serial.begin(BAUD_RATE); // Initialize Serial for communication with Mega 2560
-    WiFi.begin(ssid, password); // Connect to Wi-Fi
+    Serial.begin(BAUD_RATE);
+    WiFi.begin(ssid, password); 
 
-    Serial.println("Setup completed"); // Debugging statement
-    Serial.println("Connecting to Wi-Fi..."); // Debugging statement
+    Serial.println("Setup completed"); 
+    Serial.println("Connecting to Wi-Fi..."); 
 
     // Wait for the Wi-Fi to connect
     int attempts = 0;
@@ -59,41 +60,40 @@ void setup()
 
     // Initialize NTP Client
     timeClient.begin();
-    server.on("/start_scan", HTTP_GET, handleStartScan);
-    server.begin();
-    Serial.println("Server started"); // Debugging statement
+    server.on("/start_scan", HTTP_GET, handleStartScan); // Define route for start_scan
+    server.begin(); // Start the server
+    Serial.println("Server started"); 
 }
 
+// This function runs continuously, updating the NTP client, checking for auto-logout, reading RFID data, and handling client requests.
 void loop() 
 {
-    timeClient.update();
+    timeClient.update(); 
     int currentHour = timeClient.getHours();
     int currentMinute = timeClient.getMinutes();
 
-    // Auto-logout at 16:00 CET
     if (currentHour == 16 && currentMinute == 0) 
     {
-        Serial.println("Auto-logout triggered"); // Debugging statement
+        Serial.println("Auto-logout triggered"); 
         autoLogout();
-        delay(60000); // Wait for a minute to avoid multiple logout requests
+        delay(60000); 
     }
 
     if (Serial.available()) 
     {
-        // Read RFID data from Mega 2560
         String rfidTag = Serial.readStringUntil('\n');
-        rfidTag.trim(); // Remove any whitespace/newline characters
+        rfidTag.trim(); 
 
         if (rfidTag.length() > 0) 
         {
-            Serial.println("RFID Tag received: " + rfidTag); // Debugging statement
-            // Log the access in the database
+            Serial.println("RFID Tag received: " + rfidTag); 
             logAccess(rfidTag);
         }
     }
-    server.handleClient();
+    server.handleClient(); 
 }
 
+// This function logs the access by sending the RFID tag to the server.
 void logAccess(String rfidTag) 
 {
     if (WiFi.status() == WL_CONNECTED) 
@@ -115,7 +115,7 @@ void logAccess(String rfidTag)
             Serial.println("Error sending POST request to RFID_Database.php");
         }
 
-        http.end(); // Close the connection
+        http.end(); 
     } 
     else 
     {
@@ -123,6 +123,7 @@ void logAccess(String rfidTag)
     }
 }
 
+// This function sends an auto-logout request to the server at a specified time.
 void autoLogout() 
 {
     if (WiFi.status() == WL_CONNECTED) 
@@ -144,7 +145,7 @@ void autoLogout()
             Serial.println("Error sending auto-logout POST request");
         }
 
-        http.end(); // Close the connection
+        http.end(); 
     } 
     else 
     {
@@ -152,6 +153,7 @@ void autoLogout()
     }
 }
 
+// This function translates Wi-Fi status codes into human-readable strings for easier debugging.
 String getWiFiStatusMeaning(int status) 
 {
     switch (status) 
@@ -175,18 +177,19 @@ String getWiFiStatusMeaning(int status)
     }
 }
 
+// This function handles the /start_scan HTTP GET request and attempts to read an RFID tag within 10 seconds.
 void handleStartScan() 
 {
-    Serial.println("Received /start_scan request"); // Debugging statement
+    Serial.println("Received /start_scan request"); 
     String rfidTag = "";
     unsigned long startTime = millis();
-    while (rfidTag == "" && millis() - startTime < 10000) // Wait for up to 10 seconds
+    while (rfidTag == "" && millis() - startTime < 10000) 
     {
         if (Serial.available()) 
         {
             rfidTag = Serial.readStringUntil('\n');
             rfidTag.trim();
-            Serial.println("RFID Tag: " + rfidTag); // Debugging statement
+            Serial.println("RFID Tag: " + rfidTag); 
         }
     }
     if (rfidTag != "") 
@@ -195,7 +198,7 @@ void handleStartScan()
     } 
     else 
     {
-        Serial.println("No RFID tag found"); // Debugging statement
+        Serial.println("No RFID tag found"); 
         server.send(200, "text/plain", "No RFID tag found");
     }
 }

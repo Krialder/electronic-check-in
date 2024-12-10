@@ -9,14 +9,15 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin')
     exit('Unauthorized access');
 }
 
-// Initialize error message variable
+
 $error_msg = '';
 
+// Process and POST the Guest form data
 if ($_SERVER['REQUEST_METHOD'] === 'POST') 
 {
     // Retrieve form data
     $userId = $_POST['user_id'] ?? null;
-    $name = $_POST['name'] ?? null; // Use the name field from the form data
+    $name = $_POST['name'] ?? null; 
     $email = $_POST['email'] ?? null;
     $phone = $_POST['phone'] ?? null;
     $rfid_tag = $_POST['rfid_tag'] ?? null;
@@ -118,8 +119,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
                     $stmt->execute();
 
                     $conn->commit();
-                    reassignGuestIds($conn); // Reassign Guest IDs
-                    header('Location: /account-settings.html?success=1'); // Redirect to the HTML page with success message
+                    reassignGuestIds($conn); 
+                    header('Location: /account-settings.html?success=1');
                     exit();
                 } catch (Exception $e) 
                 {

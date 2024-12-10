@@ -45,6 +45,6 @@ fetchData($conn, "Events");
 fetchData($conn, "CheckIn");
 fetchData($conn, "RFIDDevices");
 
-// Close the connection
+
 $conn = null;
 ?>

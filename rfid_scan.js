@@ -1,4 +1,3 @@
-// Debug log to ensure JavaScript is loaded
 console.log('JavaScript loaded successfully');
 
 // Declare variables for RFID timeout and countdown interval
@@ -6,18 +5,16 @@ let rfidTimeout;
 let countdownInterval;
 let timeLeft;
 
-// Function to start RFID scan for a specific user
+
 function startRFIDScan(userId, jsonOnly = false) 
 {
-    // Debug log
     console.log('startRFIDScan called for user ID:', userId);
 
-    // Clear any existing timeouts and intervals
+    // Clear any existing timeouts and intervals to avoid conflicts
     clearTimeout(rfidTimeout);
     clearInterval(countdownInterval);
     alert("Please scan RFID within 1 minute.");
 
-    // Set the countdown time to 60 seconds
     timeLeft = 60;
     const timerDisplay = document.getElementById('timer_' + userId);
 
@@ -32,20 +29,18 @@ function startRFIDScan(userId, jsonOnly = false)
     timerDisplay.style.display = 'block';
     timerDisplay.textContent = 'Time left: ' + timeLeft + ' seconds';
 
-    // Update the timer every second
+    // Update the timer every second until time runs out
     countdownInterval = setInterval(() => 
     {
         if (timeLeft <= 0) 
         {
-            // Clear interval and update timer display when time is up
             clearInterval(countdownInterval);
             timerDisplay.textContent = "RFID scan timed out.";
         } 
         else 
         {
-            // Update timer display and decrement time left
             timerDisplay.textContent = 'Time left: ' + timeLeft + ' seconds';
-            console.log('Time left:', timeLeft); // Debug log
+            console.log('Time left:', timeLeft); 
 
             timeLeft--;
         }
@@ -81,10 +76,10 @@ function startRFIDScan(userId, jsonOnly = false)
     fetch('/start_scan.php')
         .then(response => response.json())
         .then(result => 
-            {
-            console.log('Server Response:', result); // Debugging statement
+        {
+            console.log('Server Response:', result); 
             if (result.status === 'success') 
-                {
+            {
                 rfidInput.value = result.rfid_tag;
                 alert("RFID scanned and assigned to user.");
                 document.removeEventListener('keydown', onRFIDScan);
@@ -106,7 +101,6 @@ function startRFIDScan(userId, jsonOnly = false)
     // Timeout after 1 minute if no RFID is scanned
     rfidTimeout = setTimeout(() => 
     {
-        // Alert timeout, remove event listener, and clear interval
         alert("RFID scan timed out.");
         document.removeEventListener('keydown', onRFIDScan);
         clearInterval(countdownInterval);
@@ -115,7 +109,6 @@ function startRFIDScan(userId, jsonOnly = false)
 
     if (jsonOnly) 
     {
-        // Hide all elements except JSON-only elements
         document.body.classList.add('json-only');
     }
 }

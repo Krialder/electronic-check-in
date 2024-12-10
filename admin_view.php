@@ -23,7 +23,7 @@ $nextUserId = $nextUserIdStmt->fetch(PDO::FETCH_ASSOC)['next_user_id'] ?? 1;
 // Check if there are any rows returned
 if ($stmt->rowCount() > 0) 
 {
-    echo '<h1>Admin View</h1>'; // Add header
+    echo '<h1>Admin View</h1>'; 
     echo '<div class="guest-container-wrapper">';
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) 
     {
@@ -90,9 +90,9 @@ else
 $conn = null;
 ?>
 
-<!-- Link to the external JavaScript file -->
 <script src="rfid_scan.js"></script>
 <script>
+// Function to toggle the display of guest fields
 function toggleGuestFields(userId) 
 {
     var guestFields = document.getElementById('guest-fields-' + userId);
@@ -128,20 +128,21 @@ function toggleGuestFields(userId)
     }
 }
 
+// Function to start RFID scan
 function startRFIDScan(userId) 
 {
     var timer = document.getElementById('timer_' + userId);
     timer.style.display = 'block';
     timer.value = 'Scanning...';
 
-    console.log('Sending request to NodeMCU to start scanning'); // Debugging statement
+    console.log('Sending request to NodeMCU to start scanning'); 
 
     // Send a request to the NodeMCU to start scanning
     fetch('http://localhost/start_scan')
         .then(response => response.json())
         .then(result => 
         {
-            console.log('Received RFID tag from NodeMCU:', result); // Debugging statement
+            console.log('Received RFID tag from NodeMCU:', result); 
 
             if (result.status === 'success') 
             {
@@ -156,11 +157,12 @@ function startRFIDScan(userId)
         })
         .catch(error => 
         {
-            console.error('Error sending request to NodeMCU:', error); // Debugging statement
+            console.error('Error sending request to NodeMCU:', error); 
             timer.value = 'Scan failed';
         });
 }
 
+// Function to update the next user ID
 function updateNextUserId(event) 
 {
     event.preventDefault();
@@ -174,70 +176,55 @@ function updateNextUserId(event)
         .catch(error => console.error('Error updating next user ID:', error));
 }
 
+// Function to confirm and delete a guest
 function confirmDeleteGuest(userId) 
 {
-    console.log('Attempting to delete guest with userId:', userId); // Debugging statement
+    console.log('Attempting to delete guest with userId:', userId); 
     if (confirm('Are you sure you want to delete this guest?')) 
     {
-        fetch('delete_guest.php', {
+        fetch('delete_guest.php', 
+        {
             method: 'POST',
-            headers: {
+            headers: 
+            {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({ user_id: userId })
         })
         .then(response => response.json())
-        .then(data => {
-            console.log('Response from delete_guest.php:', data); // Debugging statement
-            if (data.success) {
+        .then(data => 
+        {
+            console.log('Response from delete_guest.php:', data); 
+            if (data.success) 
+            {
                 document.getElementById('guest-container-' + userId).remove();
                 alert('Guest deleted successfully.');
                 updateNextUserId();
-            } else {
+            } 
+            else 
+            {
                 alert('Error deleting guest: ' + data.message);
             }
         })
-        .catch(error => {
+        .catch(error => 
+        {
             console.error('Error deleting guest:', error);
             alert('Error deleting guest: ' + error.message);
         });
     }
 }
 
+// Function to update the next user ID without form submission
 function updateNextUserId() 
 {
-    console.log('Updating next user ID'); // Debugging statement
+    console.log('Updating next user ID'); 
     fetch('update_next_user_id.php')
         .then(response => response.json())
-        .then(data => {
-            console.log('Response from update_next_user_id.php:', data); // Debugging statement
+        .then(data => 
+        {
+            console.log('Response from update_next_user_id.php:', data); 
             document.getElementById('next-user-id').textContent = data.next_user_id;
         })
         .catch(error => console.error('Error updating next user ID:', error));
 }
 </script>
-<style>
-.toggle-button 
-{
-    cursor: pointer;
-    color: blue;
-    text-decoration: underline;
-}
-
-.role-options 
-{
-    display: flex;
-    align-items: center;
-    margin-left: 
-}
-
-.role-options label 
-{
-    display: inline-block;
-    margin-right: 10px;    font-size: smaller; 
-}
-button[type="submit"] 
-    {    
-        font-size: 14px; 
-    }
-</style>

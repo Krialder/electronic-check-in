@@ -14,7 +14,6 @@ try
 
     if ($stmt->rowCount() > 0) 
     {
-        // RFID tag is already in use
         echo json_encode(['status' => 'error', 'message' => 'RFID tag already in use']);
     } 
     else 

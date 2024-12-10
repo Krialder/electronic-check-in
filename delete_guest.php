@@ -10,9 +10,9 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin')
     exit();
 }
 
-// Get the JSON input
+// Get the JSON input and validate the user ID
 $data = json_decode(file_get_contents('php://input'), true);
-error_log('Received JSON input: ' . json_encode($data)); // Debugging statement
+error_log('Received JSON input: ' . json_encode($data)); 
 $userId = $data['user_id'] ?? null;
 
 if ($userId === null) 
@@ -38,7 +38,7 @@ catch (Exception $e)
     echo json_encode(['success' => false, 'message' => 'Error deleting guest: ' . $e->getMessage()]);
 }
 
-// Function to reassign Guest IDs sequentially
+// Function to reassign Guest IDs sequentially for cleanliness
 function reassignGuestIds($conn) 
 {
     $stmt = $conn->query('SELECT user_id FROM Guest ORDER BY user_id');
