@@ -73,30 +73,38 @@ function startRFIDScan(userId, jsonOnly = false)
     document.addEventListener('keydown', onRFIDScan);
 
     // Simulate RFID scanning process
-    fetch('/start_scan.php')
-        .then(response => response.json())
-        .then(result => 
+    fetch('/start_scan.php', 
+    {
+        method: 'POST',
+        headers: 
         {
-            console.log('Server Response:', result); 
-            if (result.status === 'success') 
-            {
-                rfidInput.value = result.rfid_tag;
-                alert("RFID scanned and assigned to user.");
-                document.removeEventListener('keydown', onRFIDScan);
-                clearInterval(countdownInterval);
-                timerDisplay.textContent = "RFID scan completed.";
-            } 
-            else 
-            {
-                timerDisplay.textContent = result.message;
-            }
-        })
-        .catch(error => 
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ rfid_tag: rfidInput.value })
+    })
+    .then(response => response.json())
+    .then(result => 
+    {
+        console.log('Server Response:', result); 
+        if (result.status === 'success') 
         {
-            console.error('Error during RFID scan:', error);
-            alert("RFID scan failed.");
-            timerDisplay.textContent = "RFID scan failed.";
-        });
+            rfidInput.value = result.rfid_tag;
+            alert("RFID scanned and assigned to user.");
+            document.removeEventListener('keydown', onRFIDScan);
+            clearInterval(countdownInterval);
+            timerDisplay.textContent = "RFID scan completed.";
+        } 
+        else 
+        {
+            timerDisplay.textContent = result.message;
+        }
+    })
+    .catch(error => 
+    {
+        console.error('Error during RFID scan:', error);
+        alert("RFID scan failed.");
+        timerDisplay.textContent = "RFID scan failed.";
+    });
 
     // Timeout after 1 minute if no RFID is scanned
     rfidTimeout = setTimeout(() => 

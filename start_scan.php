@@ -5,7 +5,11 @@ include 'DB_Connection.php';
 try 
 {
     // Simulate RFID scanning process
-    $rfidTag = "RFID123456"; // Replace this with actual RFID scanning logic
+    $rfidTag = isset($_POST['rfid_tag']) ? $_POST['rfid_tag'] : null;
+    if (!$rfidTag) 
+    {
+        throw new Exception('RFID tag not provided');
+    }
 
     // Check if RFID tag exists in Users table
     $stmt = $conn->prepare("SELECT user_id FROM Users WHERE rfid_tag = :rfid_tag");
@@ -29,7 +33,12 @@ try
 } 
 catch (PDOException $e) 
 {
-    error_log('Connection failed: ' . $e->getMessage());
-    echo json_encode(['status' => 'error', 'message' => 'Connection failed: ' . $e->getMessage()]);
+    error_log('Database error: ' . $e->getMessage());
+    echo json_encode(['status' => 'error', 'message' => 'Database error: ' . $e->getMessage()]);
+}
+catch (Exception $e) 
+{
+    error_log('Error: ' . $e->getMessage());
+    echo json_encode(['status' => 'error', 'message' => 'Error: ' . $e->getMessage()]);
 }
 ?>

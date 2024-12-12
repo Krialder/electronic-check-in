@@ -210,6 +210,7 @@ li
     font-size: 1em;
     margin-top: 10px;
     transition: background-color 0.3s ease;
+    margin-right: 10px; 
 }
 
 .guest-container button[type="button"]:hover 
@@ -256,6 +257,13 @@ li
 .guest-container.toggled p 
 {
     color: #000;
+}
+
+.guest-container button[type="button"].delete-button 
+{
+    background-color: red !important; 
+    color: white;
+    margin-right: 0; 
 }
 
 /* Submit Button Styles */

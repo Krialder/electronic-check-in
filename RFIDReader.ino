@@ -60,8 +60,4 @@ void loop()
         delay(5000); 
         Serial.println("Ready for next scan"); 
     }
-    else
-    {
-        delay(1000); 
-    }
 }

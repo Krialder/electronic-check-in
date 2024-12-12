@@ -61,7 +61,7 @@ void setup()
     // Initialize NTP Client
     timeClient.begin();
     server.on("/start_scan", HTTP_GET, handleStartScan); // Define route for start_scan
-    server.begin(); // Start the server
+    server.begin(); 
     Serial.println("Server started"); 
 }
 
@@ -177,19 +177,20 @@ String getWiFiStatusMeaning(int status)
     }
 }
 
-// This function handles the /start_scan HTTP GET request and attempts to read an RFID tag within 10 seconds.
+// This function handles the /start_scan HTTP GET request and attempts to read an RFID tag within 60 seconds.
 void handleStartScan() 
 {
     Serial.println("Received /start_scan request"); 
     String rfidTag = "";
     unsigned long startTime = millis();
-    while (rfidTag == "" && millis() - startTime < 10000) 
+    while (rfidTag == "" && millis() - startTime < 60000) 
     {
         if (Serial.available()) 
         {
             rfidTag = Serial.readStringUntil('\n');
             rfidTag.trim();
             Serial.println("RFID Tag: " + rfidTag); 
+            break; 
         }
     }
     if (rfidTag != "") 
