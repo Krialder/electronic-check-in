@@ -19,7 +19,7 @@ function checkNodeMCUConnection($nodeMCU_IP)
     return $response === 'OK';
 }
 
-$nodeMCU_IP = '192.168.2.55';
+$nodeMCU_IP = '192.168.2.186';
 
 if (!checkNodeMCUConnection($nodeMCU_IP)) 
 {

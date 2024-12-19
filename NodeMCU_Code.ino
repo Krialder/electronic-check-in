@@ -4,6 +4,11 @@
 #include <WiFiUdp.h>
 #include <ESP8266WebServer.h>
 
+// Define the static IP address, gateway, and subnet mask
+IPAddress staticIP(192, 168, 2, 186); // Static IP address
+IPAddress gateway(192, 168, 2, 1);    // Gateway
+IPAddress subnet(255, 255, 255, 0);   // Subnet mask
+
 // Wi-Fi credentials
 const char* ssid = "Luftuberwachungssystem";
 const char* password = "Ux957Zi%xqbY6vPHCm#4X";

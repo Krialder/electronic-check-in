@@ -10,27 +10,14 @@ body
     margin: 0;
 }
 
-.outer-container 
-{
-    padding: 20px;
-    text-align: center;
-    background-color: white; 
-}
-
-.outer-container h2 
-{
-    margin-bottom: 20px;
-    color: #e0e0e0;
-}
-
 .container 
 {
     background-color: #e0e0e0;
-    padding: 20px 60px 20px 20px;
+    padding: 20px;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
     width: 100%;
-    max-width: 300px; 
+    max-width: 340px; 
     margin: 0 auto;
     text-align: center;
 }

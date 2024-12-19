@@ -73,7 +73,7 @@ function startRFIDScan(userId, jsonOnly = false)
     document.addEventListener('keydown', onRFIDScan);
 
     // Simulate RFID scanning process
-    fetch('http://192.168.2.55/start_scan', 
+    fetch('http://192.168.2.186/start_scan', 
     {
         method: 'POST',
         headers: 
