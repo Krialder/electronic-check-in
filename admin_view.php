@@ -138,7 +138,7 @@ function startRFIDScan(userId)
     console.log('Sending request to NodeMCU to start scanning'); 
 
     // Send a request to the NodeMCU to start scanning
-    fetch('http://localhost/start_scan')
+    fetch('http://192.168.2.55/start_scan')
         .then(response => response.json())
         .then(result => 
         {

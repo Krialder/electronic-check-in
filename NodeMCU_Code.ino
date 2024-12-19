@@ -22,7 +22,6 @@ NTPClient timeClient(ntpUDP, "pool.ntp.org", 3600 * 1); // CET is UTC+1
 WiFiClient wifiClient;
 ESP8266WebServer server(80);
 
-// This function initializes the serial communication, connects to Wi-Fi, initializes the NTP client, and starts the web server.
 void setup() 
 {
     Serial.begin(BAUD_RATE);
@@ -40,19 +39,21 @@ void setup()
         Serial.print("Attempt: ");
         Serial.println(attempts + 1);
         Serial.println("Wi-Fi Status: ");
-        Serial.println(WiFi.status()); //printing Wi-Fi status
-        Serial.println(getWiFiStatusMeaning(WiFi.status())); //Print Wi-Fi status meaning
+        Serial.println(WiFi.status()); 
+        Serial.println(getWiFiStatusMeaning(WiFi.status())); 
         attempts++;
     }
 
     if (WiFi.status() == WL_CONNECTED) 
     {
         Serial.println("Connected to Wi-Fi");
+        Serial.print("NodeMCU IP Address: ");
+        Serial.println(WiFi.localIP());
         long rssi = WiFi.RSSI();
         Serial.print("Signal strength (RSSI): ");
         Serial.print(rssi);
         Serial.println(" dBm");
-    } 
+    }
     else 
     {
         Serial.println("Failed to connect to Wi-Fi");
@@ -61,11 +62,11 @@ void setup()
     // Initialize NTP Client
     timeClient.begin();
     server.on("/start_scan", HTTP_GET, handleStartScan); // Define route for start_scan
+    server.on("/status", HTTP_GET, handleStatus); // Define route for status
     server.begin(); 
     Serial.println("Server started"); 
 }
 
-// This function runs continuously, updating the NTP client, checking for auto-logout, reading RFID data, and handling client requests.
 void loop() 
 {
     timeClient.update(); 
@@ -89,11 +90,14 @@ void loop()
             Serial.println("RFID Tag received: " + rfidTag); 
             logAccess(rfidTag);
         }
+        else
+        {
+            Serial.println("No RFID Tag received from RFIDReader.ino");
+        }
     }
     server.handleClient(); 
 }
 
-// This function logs the access by sending the RFID tag to the server.
 void logAccess(String rfidTag) 
 {
     if (WiFi.status() == WL_CONNECTED) 
@@ -123,7 +127,6 @@ void logAccess(String rfidTag)
     }
 }
 
-// This function sends an auto-logout request to the server at a specified time.
 void autoLogout() 
 {
     if (WiFi.status() == WL_CONNECTED) 
@@ -153,7 +156,6 @@ void autoLogout()
     }
 }
 
-// This function translates Wi-Fi status codes into human-readable strings for easier debugging.
 String getWiFiStatusMeaning(int status) 
 {
     switch (status) 
@@ -177,7 +179,6 @@ String getWiFiStatusMeaning(int status)
     }
 }
 
-// This function handles the /start_scan HTTP GET request and attempts to read an RFID tag within 60 seconds.
 void handleStartScan() 
 {
     Serial.println("Received /start_scan request"); 
@@ -202,4 +203,9 @@ void handleStartScan()
         Serial.println("No RFID tag found"); 
         server.send(200, "text/plain", "No RFID tag found");
     }
+}
+
+void handleStatus() 
+{
+    server.send(200, "text/plain", "OK");
 }

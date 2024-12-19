@@ -4,6 +4,28 @@ ini_set('display_errors', 1);
 
 include 'DB_Connection.php';
 
+function checkNodeMCUConnection($nodeMCU_IP) 
+{
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, "http://$nodeMCU_IP/status");
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    $response = curl_exec($ch);
+    if (curl_errno($ch)) 
+    {
+        echo 'Curl error: ' . curl_error($ch);
+    }
+    curl_close($ch);
+    echo "NodeMCU response: $response"; 
+    return $response === 'OK';
+}
+
+$nodeMCU_IP = '192.168.2.55';
+
+if (!checkNodeMCUConnection($nodeMCU_IP)) 
+{
+    die('NodeMCU is not connected');
+}
+
 if (isset($_POST['rfid'])) 
 {
     $rfid = $_POST['rfid'];
