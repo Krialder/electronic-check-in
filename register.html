@@ -1,51 +1,76 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrierung</title>
+    <title>Registration</title>
     <link rel="stylesheet" href="register.css">
-    <script src="register.js" defer></script>
 </head>
 <body>
-    <h1>Registrierung</h1>
-    
-    <form action="register.php" method="post" onsubmit="return validatePassword()">
-        <!-- Forname field -->
-        <label for="forname">*Vorname:</label>
-        <input type="text" id="forname" name="forname" required oninput="updateUsername()" pattern="[A-Za-z]+" title="Der Vorname darf nur Buchstaben enthalten">
-        <span><?php echo $forname_err; ?></span>
+    <div class="container">
+        <h1>Registration</h1>
+        
+        <form action="register.php" method="post" onsubmit="return validatePassword()">
+            <label for="forname">*Vorname:</label>
+            <input type="text" id="forname" name="forname" required oninput="updateUsername()" pattern="[A-Za-z]+" title="Der Vorname darf nur Buchstaben enthalten">
+            <span><?php echo $forname_err; ?></span>
 
-        <!-- Surname field -->
-        <label for="surname">*Nachname:</label>
-        <input type="text" id="surname" name="surname" required oninput="updateUsername()" pattern="[A-Za-z]+" title="Der Nachname darf nur Buchstaben enthalten">
-        <span><?php echo $surname_err; ?></span>
+            <label for="surname">*Nachname:</label>
+            <input type="text" id="surname" name="surname" required oninput="updateUsername()" pattern="[A-Za-z]+" title="Der Nachname darf nur Buchstaben enthalten">
+            <span><?php echo $surname_err; ?></span>
 
-        <!-- Username field -->
-        <label for="name">Benutzername:</label>
-        <input type="text" id="name" name="name" readonly>
-        <span><?php echo $name_err; ?></span>
+            <label for="name">Benutzername:</label>
+            <input type="text" id="name" name="name" readonly>
+            <span><?php echo $name_err; ?></span>
 
-        <!-- Email field -->
-        <label for="email">E-Mail:</label>
-        <input type="email" id="email" name="email">
+            <label for="email">E-mail:</label>
+            <input type="email" id="email" name="email">
 
-        <!-- Password field -->
-        <label for="password">**Passwort:</label>
-        <input type="password" id="password" name="password" required style="height: 60px; margin-top: 20px;">
-        <span><?php echo $password_err; ?></span>
+            <label for="password">**Password:</label>
+            <input type="password" id="password" name="password" required>
+            <span><?php echo $password_err; ?></span>
 
-        <!-- Confirm Password field -->
-        <label for="password2">**Passwort wiederholen:</label>    
-        <input type="password" id="password2" name="password2" required style="height: 60px; margin-top: 20px;">
+            <label for="password2">**Password wiederholen:</label>    
+            <input type="password" id="password2" name="password2" required>
 
-        <!-- Required fields note -->
-        <p>* Pflichtfeld</p>
-        <p>** Passwort muss mindestens 9 Zeichen, einen Kleinbuchstaben, einen Großbuchstaben, eine Zahl und ein Sonderzeichen enthalten.</p>
+            <p>* Pflichtfeld</p>
+            <p>** Password must contain at least 9 characters, one lowercase letter, one uppercase letter, one number, and one special character.</p>
 
-        <!-- Submit button -->
-        <input type="submit" name="register" value="Absenden">
-        <a href="http://localhost/Testy.html" class="return-button">Zurück</a>
-    </form>
+            <input type="submit" name="register" value="Submit">
+            <a href="http://localhost/Testy.html" class="return-button">Zurück</a>
+        </form>
+    </div>
+    <script>
+        // function to update the username field based on the forname and surname fields
+        function updateUsername()
+        {
+            const forname = document.getElementById('forname').value.trim();
+            const surname = document.getElementById('surname').value.trim();
+            document.getElementById('name').value = forname + ' ' + surname;
+        }
+
+        // function to validate the password field
+        function validatePassword() 
+        {
+            const password = document.getElementById('password').value;
+            const password2 = document.getElementById('password2').value;
+            const pattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W).{9,}$/;
+
+            // check if the passwords match
+            if (password !== password2)
+            {
+                alert('Passwords do not match');
+                return false;
+            }
+
+            // check if the password meets the requirements
+            else if (!pattern.test(password))
+            {
+                alert('Password must contain at least 9 characters, one lowercase letter, one uppercase letter, one number, and one special character');
+                return false;
+            }
+            return true;
+        }
+    </script>
 </body>
 </html>

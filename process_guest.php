@@ -9,14 +9,15 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin')
     exit('Unauthorized access');
 }
 
-// Initialize error message variable
+
 $error_msg = '';
 
+// Process and POST the Guest form data
 if ($_SERVER['REQUEST_METHOD'] === 'POST') 
 {
     // Retrieve form data
     $userId = $_POST['user_id'] ?? null;
-    $name = $_POST['name'] ?? null; // Use the name field from the form data
+    $name = $_POST['name'] ?? null; 
     $email = $_POST['email'] ?? null;
     $phone = $_POST['phone'] ?? null;
     $rfid_tag = $_POST['rfid_tag'] ?? null;
@@ -80,6 +81,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
             } 
             else 
             {
+                // Transfer guest to Users table
+                $conn->beginTransaction();
                 try 
                 {
                     // Fetch guest data from Guest table
@@ -115,50 +118,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
                     $stmt->bindParam(':user_id', $userId);
                     $stmt->execute();
 
-                    // Update guest details
-                    $sql = 'UPDATE Guest SET name = :name, email = :email, phone = :phone, rfid_tag = :rfid_tag, password = :password, role = :role WHERE user_id = :user_id';
-                    $stmt = $conn->prepare($sql);
-                    $stmt->bindParam(':name', $name);
-                    $stmt->bindParam(':email', $email);
-                    $stmt->bindParam(':phone', $phone);
-                    $stmt->bindParam(':rfid_tag', $rfid_tag);
-                    $stmt->bindParam(':password', $password);
-                    $stmt->bindParam(':role', $role);
-                    $stmt->bindParam(':user_id', $userId);
-                    $stmt->execute();
-
-                    // Update user IDs to be sequential
-                    $sql = 'SET @count = 0';
-                    $conn->exec($sql);
-                    $sql = 'UPDATE Guest SET user_id = @count:= @count + 1';
-                    $conn->exec($sql);
-                    $sql = 'ALTER TABLE Guest AUTO_INCREMENT = 1';
-                    $conn->exec($sql);
-
-                    header('Location: /account-settings.html?success=1'); // Redirect to the HTML page with success message
+                    $conn->commit();
+                    reassignGuestIds($conn); 
+                    header('Location: /account-settings.html?success=1');
                     exit();
                 } catch (Exception $e) 
                 {
+                    $conn->rollBack();
                     $error_msg = 'Error during operation: ' . $e->getMessage();
                 }
             }
         }
     }
 
-    if (isset($_POST['delete_guest'])) {
-        // Handle delete guest action
-        $sql = 'DELETE FROM Guest WHERE user_id = :user_id';
-        $stmt = $conn->prepare($sql);
-        $stmt->bindParam(':user_id', $userId);
-        $stmt->execute();
-
-        header('Location: /account-settings.html?success=Guest deleted successfully');
-        exit();
-    }
-
     // Redirect back to account-settings.html with error message and user ID
     header('Location: /account-settings.html?error=' . urlencode($error_msg) . '&user_id=' . urlencode($userId));
     exit();
+}
+
+// Function to reassign Guest IDs sequentially
+function reassignGuestIds($conn) 
+{
+    $stmt = $conn->query('SELECT user_id FROM Guest ORDER BY user_id');
+    $guestIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
+    $newId = 1;
+    foreach ($guestIds as $id) 
+    {
+        if ($id != $newId) 
+        {
+            $updateStmt = $conn->prepare('UPDATE Guest SET user_id = :new_id WHERE user_id = :old_id');
+            $updateStmt->bindParam(':new_id', $newId);
+            $updateStmt->bindParam(':old_id', $id);
+            $updateStmt->execute();
+        }
+        $newId++;
+    }
 }
 ?>
 
@@ -167,7 +161,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
 <head>
     <meta charset="UTF-8">
     <title>Process Guest</title>
-    <link rel="stylesheet" href="styles.css"> <!-- Link to the CSS file -->
 </head>
 <body>
     <?php if (!empty($error_msg)) echo '<p>' . $error_msg . '</p>'; ?>

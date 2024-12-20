@@ -35,7 +35,8 @@
         // Fetch data from file and populate the dashboard
         fetch('/dashboard_fetch_data.php')
             .then(response => response.json())
-            .then(data => {
+            .then(data => 
+            {
                 // Debugging line to see the fetched data in the console
                 console.log('Fetched Data:', data); 
 
@@ -47,7 +48,8 @@
 
                 // Populate recent check-ins list
                 const recentCheckinsList = document.getElementById('recent-checkins');
-                data.recent_checkins.forEach(checkin => {
+                data.recent_checkins.forEach(checkin => 
+                {
                     const listItem = document.createElement('li');
                     listItem.textContent = `${checkin.name} checked into ${checkin.event_name} at ${checkin.checkin_time}`;
                     recentCheckinsList.appendChild(listItem);
@@ -57,7 +59,8 @@
                 document.getElementById('total-checkins').textContent = `Total Check-ins: ${data.analytics.total_checkins}`;
                 document.getElementById('avg-checkin-time').textContent = `Average Check-in Time: ${data.analytics.avg_checkin_time}`;
             })
-            .catch(error => {
+            .catch(error => 
+            {
                 console.error('Fetch Error:', error);
             });
 
