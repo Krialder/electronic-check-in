@@ -1,7 +1,7 @@
 #include <SPI.h>
 #include <MFRC522.h>
 
-#define SS_PIN 10 
+#define SS_PIN 53
 #define RST_PIN 9 
 
 // RFIDManager class handles the initialization and reading of RFID tags using the MFRC522 module
@@ -57,6 +57,7 @@ void loop()
     if (rfidTag != "")
     {
         Serial.println("RFID Tag: " + rfidTag);
+        Serial.println(rfidTag);
         delay(5000); 
         Serial.println("Ready for next scan"); 
     }

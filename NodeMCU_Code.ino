@@ -199,6 +199,7 @@ void handleStartScan()
             break; 
         }
     }
+    
     if (rfidTag != "") 
     {
         server.send(200, "text/plain", rfidTag);
