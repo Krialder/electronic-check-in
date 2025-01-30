@@ -32,7 +32,8 @@ const unsigned long rfidCooldown = 10000; // Cooldown period in milliseconds
 
 void handleStatus() {
     String response = "RFID ready";
-    if (lastRFID != "") {
+    if (lastRFID != "") 
+    {
         response += " - Last RFID: " + lastRFID;
     }
     server.send(200, "text/plain", response);
@@ -43,7 +44,7 @@ void handleGetRFID()
     if (lastRFID != "") 
     {
         server.send(200, "text/plain", lastRFID);
-        lastRFID = ""; // Clear the last RFID after sending
+        lastRFID = "";
     } 
     else {
         server.send(200, "text/plain", "No RFID");
@@ -55,18 +56,23 @@ void sendRFIDToServer(String rfid)
     if (WiFi.status() == WL_CONNECTED) 
     {
         HTTPClient http;
-        http.begin(logAccessUrl);
+        http.setTimeout(10000); // Set timeout to 10 seconds
+        http.begin(wifiClient, logAccessUrl);
         http.addHeader("Content-Type", "application/x-www-form-urlencoded");
         String postData = "rfid=" + rfid;
         int httpResponseCode = http.POST(postData);
         if (httpResponseCode > 0) {
             String response = http.getString();
             Serial.println("Server response: " + response);
-        } else {
+        } 
+        else 
+        {
             Serial.println("Error sending RFID to server: " + String(httpResponseCode));
         }
         http.end();
-    } else {
+    } 
+    else 
+    {
         Serial.println("WiFi not connected");
     }
 }
@@ -124,7 +130,8 @@ void loop()
     Serial.println("RFID Tag: " + currentRFID);
 
     unsigned long currentTime = millis();
-    if (currentRFID == lastRFID && (currentTime - lastProcessedTime) < rfidCooldown) {
+    if (currentRFID == lastRFID && (currentTime - lastProcessedTime) < rfidCooldown) 
+    {
         Serial.println("RFID " + currentRFID + " ignored due to cooldown");
         delay(50);
         return;
