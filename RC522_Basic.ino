@@ -44,7 +44,7 @@ void handleGetRFID()
     if (lastRFID != "") 
     {
         server.send(200, "text/plain", lastRFID);
-        lastRFID = "";
+        lastRFID = ""; // Reset RFID after it got requested
     } 
     else {
         server.send(200, "text/plain", "No RFID");
@@ -141,6 +141,12 @@ void loop()
     lastProcessedTime = currentTime;
 
     sendRFIDToServer(currentRFID);
+
+    // Wait for the RFID tag to be removed
+    while (rfid.PICC_IsNewCardPresent() && rfid.PICC_ReadCardSerial()) 
+    {
+        delay(50);
+    }
 
     delay(1000);
 }

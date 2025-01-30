@@ -6,53 +6,62 @@ set_time_limit(0);
 include 'DB_Connection.php';
 include 'time.php'; 
 
-function checkNodeMCUConnection($nodeMCU_IP) 
-{
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, "http://$nodeMCU_IP/status");
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    $response = curl_exec($ch);
-    if (curl_errno($ch)) 
-    {
-        echo 'Curl error: ' . curl_error($ch);
-    }
-    curl_close($ch);
-    echo "NodeMCU response: $response"; 
-    if (strpos($response, 'RFID ready') !== false) 
-    {
-        preg_match('/Last RFID: (\w+)/', $response, $matches);
-        return $matches[1] ?? false;
-    }
-    return false;
-}
+$nodeMCU_IP = '192.168.2.186';
 
-function getRFIDFromNodeMCU($nodeMCU_IP) 
+function checkNodeMCUConnection($ip) 
 {
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, "http://$nodeMCU_IP/getRFID");
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    $response = curl_exec($ch);
-    if (curl_errno($ch)) 
+    $url = "http://$ip/status";
+    $response = @file_get_contents($url);
+    if ($response === FALSE) 
     {
-        echo 'Curl error: ' . curl_error($ch);
+        return false;
     }
-    curl_close($ch);
     return $response;
 }
 
-$nodeMCU_IP = '192.168.2.186';
+function getRFIDFromNodeMCU($ip) 
+{
+    $url = "http://$ip/getRFID";
+    $response = @file_get_contents($url);
+    if ($response === FALSE) 
+    {
+        return false;
+    }
+    return $response;
+}
 
-$lastRFID = checkNodeMCUConnection($nodeMCU_IP);
-if (!$lastRFID) 
+$connectionStatus = checkNodeMCUConnection($nodeMCU_IP);
+if ($connectionStatus === false || strpos($connectionStatus, 'RFID ready') === false) 
 {
     die('NodeMCU is not connected');
 }
 
+$lastRFID = '';
+$lastRFIDTime = 0;
+$rfidCooldown = 30; 
+
 while (true) 
 {
-    $rfid = getRFIDFromNodeMCU($nodeMCU_IP) ?: $lastRFID;
+    $rfid = getRFIDFromNodeMCU($nodeMCU_IP);
+    if ($rfid === false) 
+    {
+        echo "Failed to retrieve RFID";
+        sleep(1);
+        continue;
+    }
     if ($rfid) 
     {
+        $currentTime = time();
+        if ($rfid == $lastRFID && ($currentTime - $lastRFIDTime) < $rfidCooldown) 
+        {
+            echo "RFID $rfid ignored due to cooldown";
+            sleep(1);
+            continue;
+        }
+
+        $lastRFID = $rfid;
+        $lastRFIDTime = $currentTime;
+
         echo "Received RFID: $rfid";
 
         // Check if the RFID tag exists in the Users table
@@ -120,9 +129,10 @@ while (true)
         {
             echo "Access denied";
         }
+        $lastRFID = ''; // Reset RFID after processing
     } 
     else 
-    {
+    {        
         echo "Failed to retrieve RFID";
     }
     sleep(1); // Wait for 1 second before the next request
