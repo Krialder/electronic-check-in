@@ -30,7 +30,8 @@ String lastRFID = "";
 unsigned long lastProcessedTime = 0;
 const unsigned long rfidCooldown = 10000; // Cooldown period in milliseconds
 
-void handleStatus() {
+void handleStatus() 
+{
     String response = "RFID ready";
     if (lastRFID != "") 
     {
@@ -44,11 +45,23 @@ void handleGetRFID()
     if (lastRFID != "") 
     {
         server.send(200, "text/plain", lastRFID);
-        lastRFID = "";
+        lastRFID = ""; // Reset RFID after it got requested
     } 
-    else {
+    else 
+    {
         server.send(200, "text/plain", "No RFID");
     }
+}
+
+void handleResetRFID() 
+{
+    lastRFID = "";
+    server.send(200, "text/plain", "RFID reset");
+}
+
+void handleRoot() 
+{
+    server.send(200, "text/plain", "Welcome to the RFID Reader Web Server");
 }
 
 void sendRFIDToServer(String rfid) 
@@ -64,9 +77,7 @@ void sendRFIDToServer(String rfid)
         if (httpResponseCode > 0) {
             String response = http.getString();
             Serial.println("Server response: " + response);
-        } 
-        else 
-        {
+        } else {
             Serial.println("Error sending RFID to server: " + String(httpResponseCode));
         }
         http.end();
@@ -94,10 +105,17 @@ void setup()
     Serial.println("Connecting to Wi-Fi..."); 
 
     // Wait for the Wi-Fi to connect
-    while (WiFi.status() != WL_CONNECTED) 
+    unsigned long startAttemptTime = millis();
+    while (WiFi.status() != WL_CONNECTED && millis() - startAttemptTime < 30000) // 30 seconds timeout
     {
         delay(1000);
         Serial.print(".");
+    }
+
+    if (WiFi.status() != WL_CONNECTED) 
+    {
+        Serial.println("\nFailed to connect to Wi-Fi");
+        return;
     }
 
     Serial.println("\nConnected to Wi-Fi");
@@ -105,8 +123,10 @@ void setup()
     Serial.println(WiFi.localIP());
 
     // Start the web server
+    server.on("/", handleRoot); 
     server.on("/status", handleStatus);
     server.on("/getRFID", handleGetRFID);
+    server.on("/resetRFID", handleResetRFID); 
     server.begin();
     Serial.println("Web server started");
 }
@@ -141,6 +161,12 @@ void loop()
     lastProcessedTime = currentTime;
 
     sendRFIDToServer(currentRFID);
+
+    // Wait for the RFID tag to be removed
+    while (rfid.PICC_IsNewCardPresent() && rfid.PICC_ReadCardSerial()) 
+    {
+        delay(50);
+    }
 
     delay(1000);
 }

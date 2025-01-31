@@ -133,12 +133,12 @@ function startRFIDScan(userId)
 {
     var timer = document.getElementById('timer_' + userId);
     timer.style.display = 'block';
-    timer.value = 'Scanning...';
+    timer.textContent = 'Scanning...';
 
     console.log('Sending request to NodeMCU to start scanning'); 
 
     // Send a request to the NodeMCU to start scanning
-    fetch('http://192.168.2.55/start_scan')
+    fetch('http://192.168.2.186/start_scan', { mode: 'no-cors' }) // Add mode: 'no-cors'
         .then(response => response.json())
         .then(result => 
         {
@@ -152,13 +152,13 @@ function startRFIDScan(userId)
             } 
             else 
             {
-                timer.value = result.message;
+                timer.textContent = result.message;
             }
         })
         .catch(error => 
         {
             console.error('Error sending request to NodeMCU:', error); 
-            timer.value = 'Scan failed';
+            timer.textContent = 'Scan failed';
         });
 }
 
